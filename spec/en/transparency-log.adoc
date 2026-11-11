@@ -1,0 +1,127 @@
+= Transparency log
+include::_fpsot-terms.adoc[]
+
+A {term-transparency-log} is an append-only list of entries in a Merkle tree.
+Each entry here commits to one sealed record, through a salted hash.
+The log operator signs, at regular times, a {term-checkpoint} that gives the size of the tree and its root hash.
+Anyone can then check that a record is in the log, and that the log only grows.
+
+The FPSOT observability specification already sets such a tree for audit records, under OBS-110 to OBS-117.
+This page applies those rules to sealed records and changes none of them.
+It adds rules where a public log of records needs more than an internal audit log.
+Two leaf formats in one ecosystem would double the code of every verifier.
+
+These rules apply to the issuer and to the log operator.
+
+== The tree and the leaves
+
+[[LOG-030]]
+*LOG-030.* A log operator MUST meet OBS-110, OBS-113, OBS-115 and OBS-117 for its log.
+It applies OBS-116 with its own requirement levels.
+In those rules, a sealed record takes the place of an audit record.
+The log operator takes the place of the log store.
+The witness rule OBS-114 also applies, and LOG-041 makes it stricter.
+
+The tree is therefore the Merkle tree of link:https://www.rfc-editor.org/info/rfc6962[RFC 6962].
+The log operator keeps each leaf hash for the life of the tree.
+
+[[LOG-031]]
+*LOG-031.* Each entry of the log MUST be the salted hash of OBS-111.
+That hash is SHA-256 over a random salt of 32 bytes or more, then the hashed data.
+The hashed data MUST be the exact sealed bytes of the record, byte for byte, at the moment of logging.
+The issuer MUST keep those bytes and deliver them without change.
+These bytes are the PAdES file, the JAdES serialization, the XAdES document or the ASiC-E container.
+They take the place of the canonical form that OBS-111 sets for log records.
+
+Each record MUST have its own salt, from a cryptographically secure random generator.
+The issuer MUST keep each salt with its sealed record, under OBS-111.
+The issuer, and not the log operator, MUST recompute the leaves under OBS-115.
+The leaf hash in the tree is the leaf hash of link:https://www.rfc-editor.org/info/rfc6962[RFC 6962] for this entry, under OBS-110.
+
+The log MUST NOT hold the content of a record or an unsalted hash of it.
+It MUST NOT hold any other data about the record.
+A new serialization would break the seal, so the log commits to the bytes that the seal covers.
+OBS-111 keeps its own canonical form for the log stores of the observability specification.
+
+== Checkpoints and keys
+
+[[LOG-032]]
+*LOG-032.* A log operator MUST sign checkpoints with an Ed25519 log signature, under OBS-112.
+The format is that of link:https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-checkpoint.md[C2SP tlog-checkpoint v1.1.0].
+The origin line MUST name the issuer and the shard of LOG-035.
+It SHOULD have the form `<issuer domain>/<series name>-<year>`, such as `records.example.org/notices-2027`.
+For a records log, the issuer domain takes the place of the operator domain of OBS-112.
+The policy of LOG-042 names the operator.
+
+A log operator MAY add an ML-DSA-44 cosignature of its own, as OBS-114 allows.
+The origin is then the name of that cosigner.
+
+[[LOG-033]]
+*LOG-033.* A checkpoint MUST NOT have extension lines.
+An ML-DSA-44 cosignature covers only the first three lines of a checkpoint.
+Monitors cannot audit extension lines either, and the format advises against them.
+A line that one signature covers and another does not would weaken the proof without any reader noticing.
+
+[[LOG-034]]
+*LOG-034.* A log operator MUST keep and publish its keys under OBS-113.
+The log key MUST differ from every seal key, and MUST sign only the checkpoints of its log.
+A log operator SHOULD use a new log key for each new shard.
+A leak of one key then touches one shard, and a reader can tell which key signed which year.
+
+== Shards, interface and mirrors
+
+[[LOG-035]]
+*LOG-035.* A log operator MUST start a new log, called a shard, at the start of each calendar year.
+Years count in {abbr-utc-first}, and an entry belongs to the year in which the log takes it.
+It MUST also start a new shard before any change of hash or signature algorithm.
+To close a shard, it MUST sign a final checkpoint and collect the quorum of LOG-041 on it.
+It MUST time-stamp that checkpoint under LOG-023, then accept no new entry in that shard.
+A closed shard MUST stay readable for its retention period, under LOG-084.
+
+link:https://www.rfc-editor.org/info/rfc9162[RFC 9162] forbids a change of algorithm in a live log, and asks that a retired log stay readable.
+Yearly shards also match the yearly key rotation of OBS-113, and give each shard a clear retention rule.
+
+[[LOG-036]]
+*LOG-036.* A log operator MUST serve each shard through the read interface of link:https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-tiles.md[C2SP tlog-tiles v1.0.0].
+It MUST NOT prune a shard, so its minimum index stays zero.
+Anyone can then fetch every entry and every proof without an account, and the same tools read every FPSOT log.
+
+[[LOG-037]]
+*LOG-037.* An issuer MUST arrange that at least one independent mirror keeps a full copy of each shard.
+The copy includes closed shards.
+An organization other than the issuer MUST run it.
+Before it stores new entries, the mirror MUST check that the new checkpoint extends the last one it stored.
+It MUST serve its copy through the interface of LOG-036.
+A mirror SHOULD follow link:https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-mirror.md[C2SP tlog-mirror v0.1.0], and cosign the checkpoints that it stores.
+
+A national or provincial archives is a natural mirror.
+The log then outlives its operator, and an operator that closes cannot take its history away.
+
+The mirror protocol has only reached version 0.1.0.
+A later version of this specification plans to make it a MUST once the protocol reaches version 1.
+
+[[LOG-038]]
+*LOG-038.* A log MUST hold entries for the records of one issuer only.
+Its write interface MUST accept entries only from the sealing service of that issuer, after authentication.
+The monitor of LOG-061 can then treat any entry that the issuer did not expect as an incident.
+
+== References
+
+=== Normative
+
+* link:https://www.rfc-editor.org/info/rfc6962[RFC 6962, Certificate Transparency], IETF, Experimental, 2013-06. link:https://web.archive.org/web/20261101080644/https://www.rfc-editor.org/info/rfc6962/[Archived copy]
+* link:https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-checkpoint.md[Transparency Log Checkpoints], Community Cryptography Specification Project, v1.1.0, 2026-10-07.
+* link:https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-tiles.md[Tiled Transparency Logs], Community Cryptography Specification Project, v1.0.0, 2026-10-07.
+* link:https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-mirror.md[Transparency Log Mirrors], Community Cryptography Specification Project, v0.1.0, 2026-10-07.
+
+=== Informative
+
+* link:https://www.rfc-editor.org/info/rfc9162[RFC 9162, Certificate Transparency Version 2.0], IETF, Experimental, 2021-12. link:https://web.archive.org/web/20261014194404/https://www.rfc-editor.org/info/rfc9162/[Archived copy]
+
+== Document history
+
+[cols="1,1,4",options="header"]
+|===
+|Version |Date |Change
+|0.1.0 |2026-11-11 |First version.
+|===

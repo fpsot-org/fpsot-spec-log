@@ -9,22 +9,41 @@ developmentStatus: concept
 softwareType: "standalone/other"
 description:
   en:
-    shortDescription: Template for FPSOT specification repositories.
+    shortDescription: Rules to seal government records, publish proof of them in a witnessed transparency log and keep them verifiable.
     longDescription: >
-      Starting point for an FPSOT specification repository. It holds the
-      layout, the Community Specification License files, and the CI that
-      checks requirement IDs, links, languages and prose.
+      Rules for how a public body seals the records that it issues and keeps
+      them verifiable for decades. Each record gets an ETSI advanced seal in a
+      format of the European list, with a trusted time stamp. A salted hash of
+      the sealed record goes into a C2SP transparency log that independent
+      witnesses cosign under a published policy, and the reader gets an
+      offline proof. Records kept for decades also get evidence records that
+      outlive the seal algorithms. The rules name capabilities and standards,
+      not products.
     features:
-      - Specification repository layout
+      - Three profiles that a buyer can require by name
+      - Seals in JAdES, PAdES, XAdES or CAdES in ASiC-E at level B-LT
+      - Transparency log of salted hashes with yearly shards and a mirror
+      - Witness quorum with public and domestic witnesses
+      - Offline proofs and evidence records for long-term preservation
   fr:
-    shortDescription: Gabarit des dépôts de spécification de FPSOT.
+    shortDescription: Règles pour apposer un cachet sur les documents publics, en publier la preuve dans un journal de transparence attesté par des témoins et les garder vérifiables.
     longDescription: >
-      Point de départ d'un dépôt de spécification de FPSOT. Il contient la
-      structure, les fichiers de la Community Specification License, et
-      l'intégration continue qui vérifie les identifiants, les liens, les
-      langues et la rédaction.
+      Règles sur la façon dont un organisme public appose un cachet sur les
+      documents qu’il émet et les garde vérifiables pendant des décennies.
+      Chaque document reçoit un cachet avancé de l’ETSI dans un format de la
+      liste européenne, avec un horodatage de confiance. Un condensé salé du
+      document cacheté entre dans un journal de transparence C2SP que des
+      témoins indépendants cosignent selon une politique publiée, et le
+      lecteur reçoit une preuve hors ligne. Les documents conservés pendant
+      des décennies reçoivent aussi des dossiers de preuves qui survivent aux
+      algorithmes de cachet. Les règles nomment des capacités et des normes,
+      pas des produits.
     features:
-      - Structure d'un dépôt de spécification
+      - Trois profils qu’un organisme acheteur peut exiger par leur nom
+      - Cachets JAdES, PAdES, XAdES ou CAdES dans ASiC-E au niveau B-LT
+      - Journal de transparence de condensés salés, en tranches annuelles, avec un miroir
+      - Quorum de témoins publics et nationaux
+      - Preuves hors ligne et dossiers de preuves pour la préservation à long terme
 legal:
   license: Community-Spec-1.0
 maintenance:

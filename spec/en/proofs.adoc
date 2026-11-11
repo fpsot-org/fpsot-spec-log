@@ -1,0 +1,110 @@
+= Proofs and verification
+include::_fpsot-terms.adoc[]
+
+A citizen, a court or another government receives a sealed record and wants to know three things.
+Who issued it, whether anyone changed it, and whether the issuer published it to everyone in the same form.
+These rules set the proof that travels with each record, and how any verifier checks it.
+They apply to the issuer and to each verifier.
+
+The proof works offline, like a detached signature.
+It holds the {term-inclusion-proof} of the record and a checkpoint with its cosignatures.
+A verifier with the published policy and trust anchors needs nothing else from the issuer.
+
+== The proof of a record
+
+[[LOG-050]]
+*LOG-050.* An issuer MUST deliver a proof with each record of the `seal-log` profiles.
+The proof MUST follow the format `c2sp.org/tlog-proof@v1` of link:https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-proof.md[C2SP tlog-proof].
+Its checkpoint MUST carry the cosignatures that the quorum of LOG-041 needs.
+The issuer MUST deliver it beside the record, or in an outer bundle that is not logged.
+A proof beside the record is a file with the extension `.tlog-proof`.
+The file `examples/sealed-record.tlog-proof` shows a proof.
+
+The proof comes after logging, so it cannot sit inside the logged bytes of LOG-031.
+
+[[LOG-051]]
+*LOG-051.* The salt of LOG-031 MUST reach the holder of the record, so that a verifier can rebuild the entry.
+The issuer MUST put it in the `extra` line of the proof, or in the outer bundle of LOG-050.
+In the `extra` line, it MUST be the raw salt, in canonical base64 under link:https://www.rfc-editor.org/info/rfc4648[RFC 4648].
+A verifier MUST compute the entry as SHA-256 over the salt, then the sealed bytes.
+It then computes the leaf hash and checks the inclusion proof against the root of the checkpoint.
+The `extra` line has no signature, which does no harm, because a wrong salt fails to rebuild the leaf.
+
+[[LOG-052]]
+*LOG-052.* An issuer MUST give a proof that holds the salt only to the parties that may receive the record.
+For a record that is not public, it MUST NOT publish such a proof.
+It MAY publish the proof of a public record, such as a gazette or a published decision, with its salt.
+With the salt, anyone who guesses the content of a record could test the guess against the log.
+
+== Verification
+
+[[LOG-053]]
+*LOG-053.* A verifier MUST be able to check a record with published material only.
+That material is the sealed record, its proof, the policy, the trust-anchor sets and the time-stamp tokens of the checkpoints.
+The check MUST NOT need a call to the issuer.
+An issuer MUST offer at least one verifier under an open-source license, which anyone can run on their own device.
+A check that depends on the server of the issuer proves only what that server says today.
+
+[[LOG-054]]
+*LOG-054.* A verifier MUST make each of these checks and report each result on its own.
+
+1. The seal, under link:https://www.etsi.org/deliver/etsi_en/319100_319199/31910201/01.04.01_60/en_31910201v010401p.pdf[ETSI EN 319 102-1 V1.4.1], through a trust-anchor set of the issuer.
+2. The time stamp of the seal, under LOG-020.
+3. For the `seal-log` profiles, the log signature of the checkpoint, under the key of the policy.
+4. For the same profiles, the cosignatures of the checkpoint and the quorum of the policy, under LOG-045.
+5. For the same profiles, the leaf and the inclusion proof, under LOG-051.
+6. For records with an {term-evidence-record}, that record, under LOG-070.
+
+A verifier MUST reject base64 that is not canonical, as the C2SP formats ask.
+It MUST report the seal result in the form of link:https://www.etsi.org/deliver/etsi_ts/119100_119199/11910202/01.04.01_60/ts_11910202v010401p.pdf[ETSI TS 119 102-2 V1.4.1].
+It MUST name the trust-anchor set and the assurance level of LOG-018.
+A reader can then see which proof holds and which fails, rather than one yes or no.
+
+[[LOG-055]]
+*LOG-055.* An issuer and a verifier MUST NOT present a seal image, a logo or a printed mark as proof.
+An issuer MAY show a seal image on a record.
+Its verification page MUST then state that only the checks of LOG-054 prove the record.
+A copy that someone prints to a new {abbr-pdf-first} file keeps the image and loses the seal.
+The link:https://www.govinfo.gov/about/authentication[GovInfo service] of the United States warns its readers about this case.
+
+[[LOG-056]]
+*LOG-056.* An issuer SHOULD print a short look-up code and a QR code on each printout of a sealed record.
+The code SHOULD lead to an address that serves the sealed original and its proof.
+The verification page at that address MUST run the checks of LOG-054 on that material, and show each result.
+The code MUST NOT hold personal information.
+For a record that is not public, the code MUST hold at least 128 random bits.
+Nobody can then guess the code of another record.
+
+A printout cannot carry a seal, so the code leads the reader back to one.
+
+== Optional receipts
+
+[[LOG-057]]
+*LOG-057.* A log operator MAY also issue receipts in the form of link:https://www.rfc-editor.org/info/rfc9942[RFC 9942], drawn from the same tree.
+Such receipts follow the architecture of link:https://www.rfc-editor.org/info/rfc9943[RFC 9943].
+They MUST NOT replace the proof of LOG-050.
+These receipts carry no witness cosignature, and no published text maps a C2SP checkpoint to them yet.
+They help tools of the software supply chain read the same log.
+
+== References
+
+=== Normative
+
+* link:https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-proof.md[Transparency Log Proofs], Community Cryptography Specification Project, format `c2sp.org/tlog-proof@v1`, no version tag, commit of 2026-10-07.
+* link:https://www.rfc-editor.org/info/rfc4648[RFC 4648, The Base16, Base32, and Base64 Data Encodings], IETF, Proposed Standard, 2006-10. link:https://web.archive.org/web/20261108185515/https://www.rfc-editor.org/info/rfc4648/[Archived copy]
+* link:https://www.etsi.org/deliver/etsi_en/319100_319199/31910201/01.04.01_60/en_31910201v010401p.pdf[ETSI EN 319 102-1, Procedures for Creation and Validation of AdES Digital Signatures, Part 1], ETSI, V1.4.1, 2024-06. link:https://web.archive.org/web/20260713203046/https://www.etsi.org/deliver/etsi_en/319100_319199/31910201/01.04.01_60/en_31910201v010401p.pdf[Archived copy]
+* link:https://www.etsi.org/deliver/etsi_ts/119100_119199/11910202/01.04.01_60/ts_11910202v010401p.pdf[ETSI TS 119 102-2, Signature Validation Report], ETSI, V1.4.1, 2023-06. link:https://web.archive.org/web/20250119050746/https://www.etsi.org/deliver/etsi_ts/119100_119199/11910202/01.04.01_60/ts_11910202v010401p.pdf[Archived copy]
+
+=== Informative
+
+* link:https://www.rfc-editor.org/info/rfc9942[RFC 9942, COSE Receipts], IETF, Proposed Standard, 2026-06. link:https://web.archive.org/web/20261024144359/https://www.rfc-editor.org/info/rfc9942/[Archived copy]
+* link:https://www.rfc-editor.org/info/rfc9943[RFC 9943, An Architecture for Trustworthy and Transparent Digital Supply Chains], IETF, Standards Track, 2026-06. link:https://web.archive.org/web/20261103011204/https://www.rfc-editor.org/info/rfc9943/[Archived copy]
+* link:https://www.govinfo.gov/about/authentication[Authentication], United States Government Publishing Office, GovInfo. link:https://web.archive.org/web/20261106041728/https://www.govinfo.gov/about/authentication[Archived copy]
+
+== Document history
+
+[cols="1,1,4",options="header"]
+|===
+|Version |Date |Change
+|0.1.0 |2026-11-11 |First version.
+|===

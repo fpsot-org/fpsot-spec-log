@@ -1,8 +1,140 @@
 = FPSOT signed records and transparency log specification
 include::_fpsot-terms.adoc[]
 
-Replace this page with the normative text of the specification.
-Start with the scope, then the conformance classes, then the requirements.
+This specification sets how a public body seals the records that it issues.
+It also sets how the body publishes proof of them and keeps them verifiable.
+It covers outbound records, such as a gazette, a register extract, a permit or a decision.
+The word "log" in its name means a public {term-transparency-log} of sealed records.
+It does not mean the logs of software, which the FPSOT observability specification covers.
+
+The rules stack three layers, and each layer rests on an open standard.
+
+* A seal proves who issued a record.
+The issuer seals each record in an advanced electronic signature format of the {abbr-etsi-first}, with a {term-time-stamp}.
+* A transparency log proves that the issuer published the record, and that it showed the same history to everyone.
+Independent witnesses cosign each {term-checkpoint} of the log.
+* An {term-evidence-record} proves that the record still exists unchanged, long after its seal key or its algorithm grows weak.
+
+Each layer guards against a different failure.
+A seal fails when its key leaks or its algorithm falls.
+A log fails when its operator shows two histories or disappears.
+A record that carries all three proofs survives each of these failures.
+The rules name standards and capabilities, not products.
+Products appear only on the informative page xref:reference-stack.adoc[Reference stack].
+
+== Roles
+
+[[LOG-001]]
+*LOG-001.* Each party that claims conformance MUST state which of these roles it fills.
+A party can fill more than one role.
+
+* The issuer is the public body that seals its records, logs them and answers for them.
+* The log operator runs the transparency log of the issuer.
+The issuer can run it itself.
+* A witness is an independent party that checks each new checkpoint against the last one it saw, then cosigns it.
+* A {term-monitor} reads every entry of the log and compares it with the records that the issuer meant to issue.
+* A {term-mirror} keeps a full copy of the log and serves it, so that the log outlives its operator.
+* A verifier checks a record, its seal, its time stamp and its proof of publication.
+Any person, court or other government can act as a verifier.
+* A preservation service keeps the proofs of a record valid over its whole retention period.
+
+Each rule names the role that it binds.
+A named role tells a buyer what to ask of each supplier, and tells a tester what to check.
+
+== Profiles
+
+An issuer claims one profile for each series of records that it issues.
+Each profile adds rules to the one before it.
+
+[cols="2,3,4",options="header"]
+|===
+|Profile |What it proves |Rules
+|`seal` |Origin, integrity and time at sealing |LOG-001 to LOG-005, LOG-010 to LOG-022, LOG-053 to LOG-056, LOG-060, LOG-062 to LOG-064, LOG-080, LOG-083, LOG-090 to LOG-093
+|`seal-log` |Adds public proof of publication, the same for every reader |The rules of `seal`, plus LOG-023, LOG-024, LOG-030 to LOG-052, LOG-057, LOG-061, LOG-081, LOG-082, LOG-084, LOG-085
+|`seal-log-preserve` |Adds proof of integrity for the whole retention period |The rules of `seal-log`, plus LOG-070 to LOG-075
+|===
+
+[[LOG-002]]
+*LOG-002.* An issuer MUST state the profile of each series of records in the inventory of its deployment.
+It MUST meet every MUST rule of the profile that it claims.
+An issuer MUST claim at least `seal-log` for each series that it publishes as an official public record.
+
+An issuer MUST claim `seal-log-preserve` for each series that it keeps permanently.
+It MUST also claim it for each series whose records must stay verifiable past an end date.
+That end date is the one that the inventory of LOG-092 gives for the seal algorithm.
+For the algorithms of LOG-015, that date is 31 December 2030 at the latest.
+How long the records must stay verifiable decides, not the year of the seal.
+
+A seal alone proves origin, but not that every reader saw the same record.
+
+A witness, a monitor, a mirror, a verifier or a preservation service claims no profile.
+It meets the rules that name its role.
+
+== Legal status
+
+[[LOG-003]]
+*LOG-003.* A conformance claim MUST NOT suggest that conformance gives a record a legal status or presumption.
+It MUST name the {term-jurisdiction} whose law governs the records.
+It MUST name the trust-anchor sets of LOG-017 that verifiers use.
+The research for this specification found no tier of qualified signatures or trusted list in Canada or Québec.
+This specification supplies evidence of integrity, and a court weighs that evidence under its own law.
+
+This specification states the practice of {abbr-fpsot-first}, and it is not legal advice.
+Points that need a lawyer sit in informative notes and on the page xref:questions-for-counsel.adoc[Questions for counsel], never in a rule.
+
+== Versions and conformance testing
+
+[[LOG-004]]
+*LOG-004.* An implementation MUST follow the versions of the outside standards that this page lists under Standards.
+It MAY follow a later version of the same standard when the parts that it uses keep the same meaning.
+Seals, logs and proofs must stay readable for decades, so each reader must know which text applies.
+
+[[LOG-005]]
+*LOG-005.* A conformance suite of this specification MUST check the output of an implementation, under TST-044.
+The output includes the sealed records, the seal manifests, the checkpoints, the policies and the proofs.
+It MUST NOT need the source code of the implementation.
+The folder `examples/` holds the first fixtures, and a conformance tool will follow in a later version.
+
+== Parts
+
+The rules come in ten parts, and two informative pages follow them.
+
+* xref:seals.adoc[Seals and signatures] sets the formats, levels, algorithms, keys and trust anchors of seals.
+* xref:time-stamps.adoc[Time stamps] sets the source of trusted time.
+* xref:transparency-log.adoc[Transparency log] sets the tree, the leaves, the checkpoints, the shards and the mirrors.
+* xref:witnesses.adoc[Witnesses and policy] sets who cosigns a checkpoint, and the published policy that verifiers apply.
+* xref:proofs.adoc[Proofs and verification] sets the proof that goes with each record, and how anyone checks it.
+* xref:monitoring.adoc[Monitoring and incident response] sets how the issuer catches entries and keys that it did not expect.
+* xref:preservation.adoc[Long-term preservation] sets the evidence records that keep a record verifiable after its seal weakens.
+* xref:retention.adoc[Retention, redaction and transfer] sets how an issuer keeps and destroys records, salts and log shards.
+* xref:post-quantum.adoc[Algorithm agility and post-quantum] sets how the rules change algorithms over time.
+* xref:reference-stack.adoc[Reference stack] is informative, and names the products that {abbr-fpsot} uses to build its own implementation.
+* xref:questions-for-counsel.adoc[Questions for counsel] is informative, and lists the legal points that a lawyer must settle.
+
+== Related specifications
+
+This specification builds on other {abbr-fpsot} specifications, and cites their rules by number.
+
+* The observability specification sets the tree, leaves, checkpoints and keys of a tamper-evident log, under OBS-110 to OBS-117.
+This specification applies those rules to sealed records, adds witness, policy and proof rules, and changes none of them.
+* The observability specification also sets retention, {term-legal-hold}, destruction and transfer records, under OBS-100 to OBS-105, and clocks, under OBS-033.
+* The security specification sets how a project keeps and rotates its keys, under SEC-020 and SEC-023.
+* The testing specification sets the conformance suites, under TST-044.
+* The naming specification sets the form of event names, field names and file names, under NAM-050, NAM-040 and NAM-070.
+* The identity and access specification sets how staff sign in before they ask for a seal.
+
+== Examples
+
+The folder `examples/` holds four synthetic files that meet these rules.
+
+* `sealed-record.txt` stands in for the sealed bytes of one record.
+It is not a real seal.
+* `records-log.tlog-policy` is the published witness policy of one log shard, under LOG-040 and LOG-041.
+* `sealed-record.tlog-proof` is the proof that goes with the record, under LOG-050 and LOG-051.
+* `seal-manifest.json` is the seal manifest of the record, under LOG-019.
+
+The script `examples/check-examples.py` checks the signatures, the quorum, the leaf, the inclusion proof and the manifest.
+The script `examples/test-examples.sh` checks that it rejects broken copies.
 
 == Conformance
 
@@ -11,35 +143,53 @@ ____
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in BCP 14 (link:https://www.rfc-editor.org/info/rfc2119[RFC 2119], link:https://www.rfc-editor.org/info/rfc8174[RFC 8174]) when, and only when, they appear in all capitals, as shown here.
 ____
 
-The keywords follow requirement WRT-010 of the {abbr-fpsot-first} writing specification.
+The keywords follow requirement WRT-010 of the {abbr-fpsot} writing specification.
 The French version uses the French keywords of WRT-011.
 
-== Requirements
+== Standards
 
-Give each requirement an anchor line with its ID, directly above its paragraph.
-The anchor looks like `+[[XYZ-001]]+`.
-The example below shows the form. Replace it with the first requirement.
+The rules summarize outside standards in their own words and take no text from them.
+They cite these versions.
 
-[[TPL-001]]
-*TPL-001.* A normative statement MUST use one of the {abbr-bcp-first} 14 keywords in capitals.
-The keyword gives the rule its strength.
+* Seal formats: the list of Annex I of link:https://eur-lex.europa.eu/eli/reg_impl/2026/248/oj/eng[Implementing Regulation 2026/248 of the European Union].
+Public bodies of the European Union must accept these formats from 23 February 2027.
+The page xref:seals.adoc[Seals and signatures] gives each format and its version.
+* Validation: link:https://www.etsi.org/deliver/etsi_en/319100_319199/31910201/01.04.01_60/en_31910201v010401p.pdf[ETSI EN 319 102-1 V1.4.1], with reports in the form of link:https://www.etsi.org/deliver/etsi_ts/119100_119199/11910202/01.04.01_60/ts_11910202v010401p.pdf[ETSI TS 119 102-2 V1.4.1].
+* Time stamps: link:https://www.rfc-editor.org/info/rfc3161[RFC 3161], from an authority under a policy that meets link:https://www.etsi.org/deliver/etsi_en/319400_319499/319421/01.03.01_60/en_319421v010301p.pdf[ETSI EN 319 421 V1.3.1].
+* Transparency log: the C2SP specifications at commit `b2dd989`.
+They are link:https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-checkpoint.md[tlog-checkpoint v1.1.0], link:https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-cosignature.md[tlog-cosignature v1.1.0], link:https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-witness.md[tlog-witness v1.1.0], link:https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-tiles.md[tlog-tiles v1.0.0] and link:https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-mirror.md[tlog-mirror v0.1.0].
+* Proofs and policies: link:https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-proof.md[tlog-proof] and link:https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-policy.md[tlog-policy], at the same commit.
+These two have no version tag yet, so the commit fixes their text.
+* Evidence records: link:https://www.rfc-editor.org/info/rfc4998[RFC 4998] and link:https://www.rfc-editor.org/info/rfc6283[RFC 6283].
+* Cryptographic suites: link:https://www.etsi.org/deliver/etsi_ts/119300_119399/119312/02.01.01_60/ts_119312v020101p.pdf[ETSI TS 119 312 V2.1.1] and link:https://www.cyber.gc.ca/en/guidance/cryptographic-algorithms-unclassified-protected-protected-b-information-itsp40111[ITSP.40.111 version 5 of the Canadian Centre for Cyber Security].
 
 == References
-
-List here each outside source that this page cites, with the same address as its link in the text.
-Each entry gives the title, publisher, version, date and an archived copy.
 
 === Normative
 
 * link:https://www.rfc-editor.org/info/rfc2119[RFC 2119, Key words for use in RFCs to Indicate Requirement Levels], IETF, BCP 14, 1997-03. link:https://web.archive.org/web/20261103005705/https://www.rfc-editor.org/info/rfc2119/[Archived copy]
 * link:https://www.rfc-editor.org/info/rfc8174[RFC 8174, Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words], IETF, BCP 14, 2017-05. link:https://web.archive.org/web/20261103005743/https://www.rfc-editor.org/info/rfc8174/[Archived copy]
+* link:https://eur-lex.europa.eu/eli/reg_impl/2026/248/oj/eng[Commission Implementing Regulation (EU) 2026/248, reference standards for advanced electronic signature and seal formats], European Union, 2026-02-02. link:https://web.archive.org/web/20260919010505/https://eur-lex.europa.eu/eli/reg_impl/2026/248/oj/eng[Archived copy]
+* link:https://www.etsi.org/deliver/etsi_en/319100_319199/31910201/01.04.01_60/en_31910201v010401p.pdf[ETSI EN 319 102-1, Procedures for Creation and Validation of AdES Digital Signatures, Part 1], ETSI, V1.4.1, 2024-06. link:https://web.archive.org/web/20260713203046/https://www.etsi.org/deliver/etsi_en/319100_319199/31910201/01.04.01_60/en_31910201v010401p.pdf[Archived copy]
+* link:https://www.etsi.org/deliver/etsi_ts/119100_119199/11910202/01.04.01_60/ts_11910202v010401p.pdf[ETSI TS 119 102-2, Signature Validation Report], ETSI, V1.4.1, 2023-06. link:https://web.archive.org/web/20250119050746/https://www.etsi.org/deliver/etsi_ts/119100_119199/11910202/01.04.01_60/ts_11910202v010401p.pdf[Archived copy]
+* link:https://www.rfc-editor.org/info/rfc3161[RFC 3161, Internet X.509 Public Key Infrastructure Time-Stamp Protocol (TSP)], IETF, Proposed Standard, 2001-08. link:https://web.archive.org/web/20261104025145/https://www.rfc-editor.org/info/rfc3161/[Archived copy]
+* link:https://www.etsi.org/deliver/etsi_en/319400_319499/319421/01.03.01_60/en_319421v010301p.pdf[ETSI EN 319 421, Policy and Security Requirements for Trust Service Providers issuing Time-Stamps], ETSI, V1.3.1, 2025-07. link:https://web.archive.org/web/20260925181041/https://www.etsi.org/deliver/etsi_en/319400_319499/319421/01.03.01_60/en_319421v010301p.pdf[Archived copy]
+* link:https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-checkpoint.md[Transparency Log Checkpoints], Community Cryptography Specification Project, v1.1.0, 2026-10-07.
+* link:https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-cosignature.md[Transparency Log Cosignatures], Community Cryptography Specification Project, v1.1.0, 2026-10-07.
+* link:https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-witness.md[Transparency Log Witness Protocol], Community Cryptography Specification Project, v1.1.0, 2026-10-07.
+* link:https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-tiles.md[Tiled Transparency Logs], Community Cryptography Specification Project, v1.0.0, 2026-10-07.
+* link:https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-mirror.md[Transparency Log Mirrors], Community Cryptography Specification Project, v0.1.0, 2026-10-07.
+* link:https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-proof.md[Transparency Log Proofs], Community Cryptography Specification Project, format `c2sp.org/tlog-proof@v1`, no version tag, commit of 2026-10-07.
+* link:https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-policy.md[Transparency log trust policy], Community Cryptography Specification Project, no version tag, commit of 2026-10-07.
+* link:https://www.rfc-editor.org/info/rfc4998[RFC 4998, Evidence Record Syntax (ERS)], IETF, Proposed Standard, 2007-08. link:https://web.archive.org/web/20260107003951/https://www.rfc-editor.org/rfc/rfc4998.html[Archived copy]
+* link:https://www.rfc-editor.org/info/rfc6283[RFC 6283, Extensible Markup Language Evidence Record Syntax (XMLERS)], IETF, Proposed Standard, 2011-07. link:https://web.archive.org/web/20261020000808/https://www.rfc-editor.org/info/rfc6283/[Archived copy]
+* link:https://www.etsi.org/deliver/etsi_ts/119300_119399/119312/02.01.01_60/ts_119312v020101p.pdf[ETSI TS 119 312, Cryptographic Suites], ETSI, V2.1.1, 2026-06. link:https://web.archive.org/web/20261023174853/https://www.etsi.org/deliver/etsi_ts/119300_119399/119312/[Archived copy of the ETSI folder that lists this version]
+* link:https://www.cyber.gc.ca/en/guidance/cryptographic-algorithms-unclassified-protected-protected-b-information-itsp40111[Cryptographic algorithms for UNCLASSIFIED, PROTECTED A, and PROTECTED B information, ITSP.40.111], Canadian Centre for Cyber Security, version 5, effective 2026-05-29. link:https://web.archive.org/web/20261020132957/https://www.cyber.gc.ca/en/guidance/cryptographic-algorithms-unclassified-protected-protected-b-information-itsp40111[Archived copy]
 
 == Document history
-
-Add one row for each version that changes this page.
 
 [cols="1,1,4",options="header"]
 |===
 |Version |Date |Change
-|0.1.0 |2026-11-03 |First version.
+|0.1.0 |2026-11-11 |First version.
 |===

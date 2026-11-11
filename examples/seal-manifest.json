@@ -1,0 +1,24 @@
+{
+  "id": "01a44998-9240-7b1e-9f3a-5d2c8e4b6a10",
+  "profile": "seal-log-preserve",
+  "mediaType": "application/json",
+  "format": "jades",
+  "formatVersion": "ETSI TS 119 182-1 V1.2.1",
+  "level": "b-lt",
+  "signerType": "organizational-seal",
+  "algorithm": "ecdsa-p384-sha384",
+  "certificateSha256": "052af270af110c9c70bc78bccfd62f5fb42f5f7bcb0743d9cf07fcb85dcd9e80",
+  "trustAnchorSet": "https://records.example.org/trust-anchors/icpg",
+  "assuranceLevel": {
+    "scheme": "icpg",
+    "value": "eleve"
+  },
+  "sealedAt": "2027-03-15T14:30:00Z",
+  "timeStampAuthority": "https://tsa.example.net/",
+  "retentionRule": "example-schedule/rule-1-4-2",
+  "log": {
+    "origin": "records.example.org/notices-2027",
+    "index": 5,
+    "entryHash": "UOrD3F5XL/XCvGTIsMOZympasUj8U9p0WQMCt3KujOc="
+  }
+}

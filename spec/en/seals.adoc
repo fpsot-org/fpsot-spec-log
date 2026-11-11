@@ -1,0 +1,179 @@
+= Seals and signatures
+include::_fpsot-terms.adoc[]
+
+A {term-seal} is an advanced electronic signature that a public body applies as an organization, not as a person.
+It proves which body issued a record, and that nobody changed the record since.
+These rules set the formats, the levels, the algorithms, the keys and the trust anchors of seals.
+They apply to the issuer, and to any verifier that checks a seal.
+
+The formats come from the list that public bodies of the European Union must accept from 23 February 2027.
+The research for this specification found no Canadian or Québec list.
+The European list costs an issuer nothing.
+It also lets validators of public bodies abroad read the seals.
+
+== Formats
+
+[[LOG-010]]
+*LOG-010.* An issuer MUST seal each record in a format of this table, at the version that it gives.
+The table follows Annex I of link:https://eur-lex.europa.eu/eli/reg_impl/2026/248/oj/eng[Implementing Regulation 2026/248 of the European Union].
+An issuer MUST NOT use the older baseline formats of Annex II for a new seal.
+That annex keeps them only for signatures made before 23 February 2028.
+
+[cols="1,3,2",options="header"]
+|===
+|Format |Standard and version |Records
+|JAdES |link:https://www.etsi.org/deliver/etsi_ts/119100_119199/11918201/01.02.01_60/ts_11918201v010201p.pdf[ETSI TS 119 182-1 V1.2.1] |{abbr-json-first}
+|PAdES |link:https://www.etsi.org/deliver/etsi_en/319100_319199/31914201/01.02.01_60/en_31914201v010201p.pdf[ETSI EN 319 142-1 V1.2.1] |{abbr-pdf-first}
+|XAdES |link:https://www.etsi.org/deliver/etsi_en/319100_319199/31913201/01.03.01_60/en_31913201v010301p.pdf[ETSI EN 319 132-1 V1.3.1] |{abbr-xml-first}
+|CAdES in an ASiC-E container |link:https://www.etsi.org/deliver/etsi_en/319100_319199/31912201/01.03.01_60/en_31912201v010301p.pdf[ETSI EN 319 122-1 V1.3.1], in the container of link:https://www.etsi.org/deliver/etsi_en/319100_319199/31916201/01.01.01_60/en_31916201v010101p.pdf[ETSI EN 319 162-1 V1.1.1] and link:https://www.etsi.org/deliver/etsi_en/319100_319199/31916202/01.01.01_60/en_31916202v010101p.pdf[ETSI EN 319 162-2 V1.1.1] |Any other file, and bundles of files
+|===
+
+[[LOG-011]]
+*LOG-011.* An issuer MUST choose the format from the media type of the record, under link:https://www.rfc-editor.org/info/rfc6838[RFC 6838].
+A {abbr-json} record takes JAdES, a {abbr-pdf} record takes PAdES, and an {abbr-xml} record takes XAdES.
+Any other record, and any record made of several files, takes a detached CAdES seal inside an ASiC-E container.
+The container MAY also hold time stamps that the issuer adds before logging.
+A file added after logging would change the logged bytes of LOG-031.
+Each format then signs the bytes that its readers already know how to open.
+
+[[LOG-012]]
+*LOG-012.* A JAdES seal MUST carry the `x5c` header parameter of link:https://www.rfc-editor.org/info/rfc7515[RFC 7515], with the certificate chain of the seal.
+The parameter MAY sit in the signed or the unsigned header.
+Annex I of Regulation 2026/248 adds this demand to JAdES.
+A validator then finds the certificate in the seal itself, without a call to the issuer.
+
+[[LOG-013]]
+*LOG-013.* An issuer MUST seal each record at level B-LT or higher.
+Levels B-B and B-T alone do not conform.
+At level B-LT, the seal holds the certificates and the revocation data that a validator needs.
+The seal then stays verifiable after its certificate expires, or after its certificate authority closes.
+An issuer MAY seal at level B-LTA.
+
+An augmentation to B-LTA after logging makes a new file, and a verifier still needs the logged original of LOG-031.
+For long retention, the evidence records of LOG-070 protect many records at once.
+
+The federal guidance on electronic signatures also asks for long-term validation data in these formats.
+
+== Signers and algorithms
+
+[[LOG-014]]
+*LOG-014.* An issuer SHOULD seal its records with an organizational seal, whose certificate names the public body.
+It SHOULD use the signature of a named official only where a law names a person who must sign.
+An organizational seal does not depend on one person, so it survives a change of staff.
+The link:https://www.govinfo.gov/about/authentication[publishing office of the United States] seals its official records this way.
+Whether a seal counts as a signature under the law of a {term-jurisdiction} is a question for counsel.
+
+[[LOG-015]]
+*LOG-015.* A seal MUST use one of these algorithms.
+
+* ECDSA on the curve P-384 of link:https://csrc.nist.gov/pubs/fips/186-5/final[FIPS 186-5], with SHA-384.
+An issuer SHOULD choose this one.
+* RSA with a modulus of 3072 bits or more, with SHA-384 or a stronger hash.
+
+A seal MUST NOT use any other algorithm.
+In particular, this specification keeps Ed25519 for the keys of the log.
+Both choices appear in link:https://www.cyber.gc.ca/en/guidance/cryptographic-algorithms-unclassified-protected-protected-b-information-itsp40111[ITSP.40.111], the federal guidance on algorithms.
+ETSI TS 119 312 V2.1.1 ends RSA keys under 3000 bits on 31 December 2026.
+P-384 is also the classical half of the hybrid that ETSI recommends for long-term seals.
+A later change then adds a key and keeps this one.
+
+[[LOG-016]]
+*LOG-016.* An issuer MUST keep each seal key in a hardware security module that keeps the key inside it.
+The module MUST hold a certification to FIPS 140-3 level 3, or to Common Criteria EAL4 or higher.
+The key MUST follow SEC-020 and SEC-023, including its rotation and its owner.
+The rules on qualified preservation services of the European Union ask for the same level of hardware.
+A seal key signs every record of a body.
+Its theft would let a forger issue records in the name of the state.
+
+== Trust anchors
+
+[[LOG-017]]
+*LOG-017.* An issuer MUST publish each {term-trust-anchor} set that verifiers need for its seals and its time stamps.
+Each set MUST have a name, a stable {abbr-https-first} address and a period of validity.
+It MUST list the root certificates, or point to a trusted list that holds them.
+Here are some examples.
+
+* The certificate authorities that the President of the Treasury Board recognizes under SOR/2005-30.
+* The roots of the public key infrastructure of the Québec government.
+* The list of trusted lists of the European Union.
+
+A verifier MUST NOT trust a seal through an anchor that no published set of the issuer names.
+The research found no trusted list of the European kind in Canada or Québec.
+Each issuer must therefore say which anchors apply.
+
+[[LOG-018]]
+*LOG-018.* Each seal MUST record the trust-anchor set that applies to it, and the assurance level of its certificate.
+The level MUST name a scheme and a value from this table.
+
+[cols="1,2,3",options="header"]
+|===
+|Scheme |Values |Source
+|`tbs` |`1`, `2`, `3`, `4` |The four assurance levels of the {abbr-tbs-first} guidance on electronic signatures
+|`icpg` |`base`, `moyen`, `eleve` |The three levels of signature certificates of the Québec government public key infrastructure
+|`eidas` |`advanced`, `qualified` |The kinds of seals of the {abbr-eidas-first}
+|===
+
+A verifier can then show which anchor and which level stood behind each seal.
+A record does not then depend on one trust list that may change.
+
+[[LOG-019]]
+*LOG-019.* An issuer MUST keep a seal manifest for each sealed record, with the record.
+The manifest is a {abbr-json} object with the fields of this table, named under NAM-040 to NAM-043.
+It MUST NOT hold the salt of LOG-031, the content of the record or any personal information.
+An issuer MAY publish the manifest.
+The file `examples/seal-manifest.json` shows a manifest.
+
+[cols="2,4",options="header"]
+|===
+|Field |Content
+|`id` |An opaque identifier of the record, a {abbr-uuid-first} version 7
+|`profile` |`seal`, `seal-log` or `seal-log-preserve`, under LOG-002
+|`mediaType` |The media type of the record before sealing
+|`format` |`jades`, `pades`, `xades` or `asic-e`, under LOG-010
+|`formatVersion` |The standard and version of the format
+|`level` |`b-lt` or `b-lta`, under LOG-013
+|`signerType` |`organizational-seal` or `personal-signature`, under LOG-014
+|`algorithm` |The seal algorithm, such as `ecdsa-p384-sha384`, under LOG-015
+|`certificateSha256` |The SHA-256 hash of the seal certificate, in hexadecimal
+|`trustAnchorSet` |The address of the trust-anchor set, under LOG-017
+|`assuranceLevel` |An object with `scheme` and `value`, under LOG-018
+|`sealedAt` |The instant of the seal, in {abbr-utc-first}
+|`timeStampAuthority` |The address of the time-stamp authority, under LOG-020
+|`retentionRule` |The rule of the retention schedule, under OBS-102
+|`log` |For the `seal-log` profiles: `origin`, `index` and `entryHash` of the log entry, under LOG-031
+|`replaces` |Optional: the `id` of the record that this one replaces, under LOG-082 and LOG-083
+|`hybridWith` |Optional: for a seal of a hybrid pair, an object with the `algorithm` and the `certificateSha256` of the other seal, under LOG-091
+|===
+
+== References
+
+=== Normative
+
+* link:https://eur-lex.europa.eu/eli/reg_impl/2026/248/oj/eng[Commission Implementing Regulation (EU) 2026/248, reference standards for advanced electronic signature and seal formats], European Union, 2026-02-02. link:https://web.archive.org/web/20260919010505/https://eur-lex.europa.eu/eli/reg_impl/2026/248/oj/eng[Archived copy]
+* link:https://www.etsi.org/deliver/etsi_ts/119100_119199/11918201/01.02.01_60/ts_11918201v010201p.pdf[ETSI TS 119 182-1, JAdES digital signatures, Part 1], ETSI, V1.2.1, 2024-07. link:https://web.archive.org/web/20241210083159/https://www.etsi.org/deliver/etsi_ts/119100_119199/11918201/01.02.01_60/ts_11918201v010201p.pdf[Archived copy]
+* link:https://www.etsi.org/deliver/etsi_en/319100_319199/31914201/01.02.01_60/en_31914201v010201p.pdf[ETSI EN 319 142-1, PAdES digital signatures, Part 1], ETSI, V1.2.1, 2024-01. link:https://web.archive.org/web/20260718125408/https://www.etsi.org/deliver/etsi_en/319100_319199/31914201/01.02.01_60/en_31914201v010201p.pdf[Archived copy]
+* link:https://www.etsi.org/deliver/etsi_en/319100_319199/31913201/01.03.01_60/en_31913201v010301p.pdf[ETSI EN 319 132-1, XAdES digital signatures, Part 1], ETSI, V1.3.1, 2024-07. link:https://web.archive.org/web/20261009114003/https://www.etsi.org/deliver/etsi_EN/319100_319199/31913201/01.03.01_60/en_31913201v010301p.pdf[Archived copy]
+* link:https://www.etsi.org/deliver/etsi_en/319100_319199/31912201/01.03.01_60/en_31912201v010301p.pdf[ETSI EN 319 122-1, CAdES digital signatures, Part 1], ETSI, V1.3.1, 2023-06. link:https://web.archive.org/web/20250119050456/https://www.etsi.org/deliver/etsi_en/319100_319199/31912201/01.03.01_60/en_31912201v010301p.pdf[Archived copy]
+* link:https://www.etsi.org/deliver/etsi_en/319100_319199/31916201/01.01.01_60/en_31916201v010101p.pdf[ETSI EN 319 162-1, Associated Signature Containers (ASiC), Part 1], ETSI, V1.1.1, 2016-04. link:https://web.archive.org/web/20261013120020/https://www.etsi.org/deliver/etsi_en/319100_319199/31916201/01.01.01_60/en_31916201v010101p.pdf[Archived copy]
+* link:https://www.etsi.org/deliver/etsi_en/319100_319199/31916202/01.01.01_60/en_31916202v010101p.pdf[ETSI EN 319 162-2, Associated Signature Containers (ASiC), Part 2], ETSI, V1.1.1, 2016-04. link:https://web.archive.org/web/20261102031259/https://www.etsi.org/deliver/etsi_en/319100_319199/31916202/01.01.01_60/en_31916202v010101p.pdf[Archived copy]
+* link:https://www.rfc-editor.org/info/rfc6838[RFC 6838, Media Type Specifications and Registration Procedures], IETF, BCP 13, 2013-01. link:https://web.archive.org/web/20261108185518/https://www.rfc-editor.org/info/rfc6838/[Archived copy]
+* link:https://www.rfc-editor.org/info/rfc7515[RFC 7515, JSON Web Signature (JWS)], IETF, Proposed Standard, 2015-05. link:https://web.archive.org/web/20261104094906/https://www.rfc-editor.org/info/rfc7515/[Archived copy]
+* link:https://csrc.nist.gov/pubs/fips/186-5/final[FIPS 186-5, Digital Signature Standard (DSS)], NIST, 2023-02-03. link:https://web.archive.org/web/20261031184039/https://csrc.nist.gov/pubs/fips/186-5/final[Archived copy]
+
+=== Informative
+
+* link:https://www.etsi.org/deliver/etsi_ts/119300_119399/119312/02.01.01_60/ts_119312v020101p.pdf[ETSI TS 119 312, Cryptographic Suites], ETSI, V2.1.1, 2026-06. link:https://web.archive.org/web/20261023174853/https://www.etsi.org/deliver/etsi_ts/119300_119399/119312/[Archived copy of the ETSI folder that lists this version]
+* link:https://www.cyber.gc.ca/en/guidance/cryptographic-algorithms-unclassified-protected-protected-b-information-itsp40111[Cryptographic algorithms for UNCLASSIFIED, PROTECTED A, and PROTECTED B information, ITSP.40.111], Canadian Centre for Cyber Security, version 5, effective 2026-05-29. link:https://web.archive.org/web/20261020132957/https://www.cyber.gc.ca/en/guidance/cryptographic-algorithms-unclassified-protected-protected-b-information-itsp40111[Archived copy]
+* link:https://www.canada.ca/en/government/system/digital-government/online-security-privacy/government-canada-guidance-using-electronic-signatures.html[Government of Canada Guidance on Using Electronic Signatures], Treasury Board of Canada Secretariat, version 1.0, 2019-07-15. link:https://web.archive.org/web/20251118051144/https://www.canada.ca/en/government/system/digital-government/online-security-privacy/government-canada-guidance-using-electronic-signatures.html[Archived copy]
+* link:https://laws-lois.justice.gc.ca/eng/regulations/SOR-2005-30/[Secure Electronic Signature Regulations, SOR/2005-30], Government of Canada, current to 2026-10-19. link:https://web.archive.org/web/20260906225227/https://laws-lois.justice.gc.ca/eng/regulations/SOR-2005-30/[Archived copy]
+* link:https://cdn-contenu.quebec.ca/cdn-contenu/adm/min/cybersecurite_numerique/Publications/Securite_information/Directive_services_certification.pdf[Directive sur les services de certification offerts par le gouvernement du Québec], Gouvernement du Québec, Conseil du trésor, décret 6-2014, 2014-01-15. link:https://web.archive.org/web/20250915010310/https://cdn-contenu.quebec.ca/cdn-contenu/adm/min/cybersecurite_numerique/Publications/Securite_information/Directive_services_certification.pdf[Archived copy]
+* link:https://www.govinfo.gov/about/authentication[Authentication], United States Government Publishing Office, GovInfo. link:https://web.archive.org/web/20261106041728/https://www.govinfo.gov/about/authentication[Archived copy]
+* Commission Implementing Regulation (EU) 2025/1946, reference standards for qualified preservation services, European Union, 2025-09-29. No archived copy exists. The text is at `https://eur-lex.europa.eu/eli/reg_impl/2025/1946/oj/eng`.
+
+== Document history
+
+[cols="1,1,4",options="header"]
+|===
+|Version |Date |Change
+|0.1.0 |2026-11-11 |First version.
+|===

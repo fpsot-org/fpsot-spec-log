@@ -1,15 +1,83 @@
-= Guide
-:page-type: explanation
+= Seal and publish a series of records
+:page-type: how-to
 include::_fpsot-terms.adoc[]
 
-This page explains the specification for the people who adopt it.
-Each guide page has one type.
-It is a tutorial, a how-to guide, a reference or an explanation.
+This guide takes a public body from a series of outbound records to records that meet the `seal-log` profile.
+Each step cites the rule it meets.
+It is not legal advice, and the page of questions for counsel lists the points that a lawyer must settle.
+
+== Before you seal
+
+Choose the profile of the series, under LOG-002.
+A gazette, a register extract or a published decision takes at least `seal-log`.
+A series that you keep permanently takes `seal-log-preserve`.
+So does a series whose records must stay verifiable past 31 December 2030.
+That date holds for the seal algorithms of today.
+Write the profile in the inventory of the deployment.
+
+Find the rule of your retention schedule that covers the series, under OBS-102.
+Ask your archives whether each yearly shard of the log needs its own rule, under LOG-084.
+
+== Set up the seal
+
+Ask a certificate authority for an organizational seal certificate that names your body, under LOG-014.
+Generate its key in a hardware security module, with two people present, under LOG-016 and LOG-062.
+Choose ECDSA on P-384 with SHA-384, under LOG-015.
+
+Publish your trust-anchor sets at a stable address, under LOG-017.
+List in them the roots of your seal certificate and of your time-stamp authority, under LOG-021.
+
+== Seal each record
+
+Pick the format from the media type of the record, under LOG-011.
+A {abbr-pdf-first} file takes PAdES, a {abbr-json-first} file takes JAdES, and an {abbr-xml-first} file takes XAdES.
+Seal at level B-LT, with a time stamp of an authority under LOG-020.
+Write a seal manifest beside the record, under LOG-019.
+The file `examples/seal-manifest.json` shows one.
+
+== Log each record
+
+Draw a random salt of 32 bytes for the record, and keep it with the record, under LOG-031.
+Add SHA-256 over the salt, then the sealed bytes, to the log of the current year, under LOG-031 and LOG-035.
+Keep the sealed bytes exactly as you logged them, and deliver those bytes.
+Never add the record itself, or a hash without salt.
+
+Publish the witness policy of the shard before the first entry, under LOG-040.
+It names at least two public witnesses, three if you can, and at least one domestic witness, under LOG-041.
+The file `examples/records-log.tlog-policy` shows one.
+Ask an archives to mirror the log, under LOG-037.
+
+== Deliver the proof
+
+Wait until the witnesses of the quorum cosign a checkpoint that covers the record, under LOG-046.
+Then deliver the proof beside the record, with the salt in its `extra` line, under LOG-050 and LOG-051.
+For a record that is not public, send the proof only to those who may receive the record, under LOG-052.
+The file `examples/sealed-record.tlog-proof` shows a proof.
+
+== Check the result
+
+Run the example check on your own files, with the same four file names as the folder `examples/`.
+
+[source,text]
+----
+python3 examples/check-examples.py path/to/your/files
+----
+
+A pass shows that the signatures, the quorum, the leaf, the inclusion proof and the manifest hold together.
+The check counts only Ed25519 cosignatures toward the quorum.
+It does not count ML-DSA-44 cosignatures, which LOG-043 recommends, so a policy of ML-DSA-44 witnesses fails it.
+It does not check the seal, which needs a validator under LOG-054.
+A conformance tool will follow, under LOG-005.
+
+== Watch the log
+
+Run a monitor that compares each entry of the log with your register, under LOG-060 and LOG-061.
+Write the incident plan of LOG-063, and test it once a year.
 
 == Document history
 
 [cols="1,1,4",options="header"]
 |===
 |Version |Date |Change
-|0.1.0 |2026-11-03 |First version.
+|0.1.0 |2026-11-11 |First version.
 |===

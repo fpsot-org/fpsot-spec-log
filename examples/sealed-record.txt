@@ -1,0 +1,3 @@
+Synthetic stand-in for the sealed bytes of one record.
+A real record is a JAdES, PAdES, XAdES or ASiC-E file, and the log commits to its exact bytes.
+Record: public notice 2027-0042 of an example public body.

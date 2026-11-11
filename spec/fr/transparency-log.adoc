@@ -1,0 +1,129 @@
+= Journal de transparence
+include::_fpsot-terms.adoc[]
+
+Un {term-transparency-log} est une liste d’entrées en ajout seul, rangées dans un arbre de Merkle.
+Ici, chaque entrée engage un seul document cacheté, par un condensé salé.
+L’exploitant du journal signe, à intervalles réguliers, un {term-checkpoint} qui donne la taille de l’arbre et son condensé racine.
+Quiconque peut alors vérifier qu’un document se trouve dans le journal, et que le journal ne fait que croître.
+
+La spécification FPSOT sur l’observabilité fixe déjà un tel arbre pour les enregistrements d’audit, selon OBS-110 à OBS-117.
+Cette page applique ces règles aux documents cachetés, et n’en change aucune.
+Elle ajoute des règles là où un journal public de documents exige plus qu’un journal d’audit interne.
+Deux formats de feuille dans un même écosystème doubleraient le code de chaque vérificateur.
+
+Ces règles visent l’émetteur et l’exploitant du journal.
+
+== L’arbre et les feuilles
+
+[[LOG-030]]
+*LOG-030.* Un exploitant de journal DOIT respecter OBS-110, OBS-113, OBS-115 et OBS-117 pour son journal.
+Il applique OBS-116 avec ses propres niveaux d’exigence.
+Dans ces règles, un document cacheté prend la place d’un enregistrement d’audit.
+L’exploitant du journal prend la place du magasin de journaux.
+La règle OBS-114 sur les témoins s’applique aussi, et LOG-041 la rend plus stricte.
+
+L’arbre est donc l’arbre de Merkle du link:https://www.rfc-editor.org/info/rfc6962[RFC 6962].
+L’exploitant garde chaque condensé de feuille pendant toute la vie de l’arbre.
+
+[[LOG-031]]
+*LOG-031.* Chaque entrée du journal DOIT être le condensé salé d’OBS-111.
+Ce condensé est un SHA-256 d’un sel aléatoire d’au moins 32 octets, suivi des données hachées.
+Les données hachées DOIVENT être les octets exacts du document cacheté, octet pour octet, au moment de l’inscription au journal.
+L’émetteur DOIT garder ces octets et les remettre sans changement.
+Ces octets sont le fichier PAdES, la sérialisation JAdES, le document XAdES ou le conteneur ASiC-E.
+Ils prennent la place de la forme canonique qu’OBS-111 fixe pour les enregistrements de journal.
+
+Chaque document DOIT avoir son propre sel, tiré d’un générateur aléatoire sûr sur le plan cryptographique.
+L’émetteur DOIT garder chaque sel avec son document cacheté, selon OBS-111.
+C’est l’émetteur, et non l’exploitant du journal, qui DOIT recalculer les feuilles selon OBS-115.
+Le condensé de feuille dans l’arbre est celui du link:https://www.rfc-editor.org/info/rfc6962[RFC 6962] pour cette entrée, selon OBS-110.
+
+Le journal NE DOIT PAS contenir le contenu d’un document ni un condensé non salé de celui-ci.
+Il NE DOIT PAS contenir d’autres données sur le document.
+Une nouvelle sérialisation briserait le cachet, et le journal engage donc les octets que couvre le cachet.
+OBS-111 garde sa propre forme canonique pour les magasins de journaux de la spécification sur l’observabilité.
+
+== Points de contrôle et clés
+
+[[LOG-032]]
+*LOG-032.* Un exploitant de journal DOIT signer les points de contrôle avec une signature de journal Ed25519, selon OBS-112.
+Le format est celui de link:https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-checkpoint.md[C2SP tlog-checkpoint v1.1.0].
+La ligne d’origine DOIT nommer l’émetteur et la tranche de LOG-035.
+Elle DEVRAIT avoir la forme `<issuer domain>/<series name>-<year>`, comme `records.example.org/notices-2027`.
+Pour un journal de documents, le domaine de l’émetteur prend la place du domaine de l’exploitant d’OBS-112.
+La politique de LOG-042 nomme l’exploitant.
+
+Un exploitant PEUT ajouter une cosignature ML-DSA-44 à lui, comme le permet OBS-114.
+L’origine est alors le nom de ce cosignataire.
+
+[[LOG-033]]
+*LOG-033.* Un point de contrôle NE DOIT PAS avoir de lignes d’extension.
+Une cosignature ML-DSA-44 ne couvre que les trois premières lignes d’un point de contrôle.
+Les vigies ne peuvent pas non plus vérifier les lignes d’extension, et le format les déconseille.
+Une ligne que couvre une signature et pas une autre affaiblirait la preuve sans qu’aucun lecteur s’en aperçoive.
+
+[[LOG-034]]
+*LOG-034.* Un exploitant de journal DOIT garder et publier ses clés selon OBS-113.
+La clé du journal DOIT différer de chaque clé de cachet.
+Elle DOIT signer seulement les points de contrôle de son journal.
+Un exploitant DEVRAIT employer une nouvelle clé de journal pour chaque nouvelle tranche.
+La fuite d’une clé touche alors une seule tranche, et un lecteur peut dire quelle clé a signé quelle année.
+
+== Tranches, interface et miroirs
+
+[[LOG-035]]
+*LOG-035.* Un exploitant de journal DOIT ouvrir un nouveau journal, appelé tranche, au début de chaque année civile.
+Les années se comptent en {abbr-utc-first}, et une entrée appartient à l’année de son inscription au journal.
+Il DOIT aussi ouvrir une nouvelle tranche avant tout changement d’algorithme de hachage ou de signature.
+Pour fermer une tranche, il DOIT signer un point de contrôle final et y recueillir le quorum de LOG-041.
+Il DOIT horodater ce point de contrôle selon LOG-023, puis n’accepter aucune nouvelle entrée dans cette tranche.
+Une tranche fermée DOIT rester lisible pendant sa durée de conservation, selon LOG-084.
+
+Le link:https://www.rfc-editor.org/info/rfc9162[RFC 9162] interdit de changer d’algorithme dans un journal actif, et demande qu’un journal retiré reste lisible.
+Les tranches annuelles suivent aussi la rotation annuelle des clés d’OBS-113.
+Elles donnent à chaque tranche une règle de conservation claire.
+
+[[LOG-036]]
+*LOG-036.* Un exploitant de journal DOIT servir chaque tranche par l’interface de lecture de link:https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-tiles.md[C2SP tlog-tiles v1.0.0].
+Il NE DOIT PAS élaguer une tranche, et son index minimal reste donc à zéro.
+Quiconque peut alors obtenir chaque entrée et chaque preuve sans compte, et les mêmes outils lisent chaque journal FPSOT.
+
+[[LOG-037]]
+*LOG-037.* Un émetteur DOIT faire en sorte qu’au moins un miroir indépendant garde une copie complète de chaque tranche.
+Cette copie comprend les tranches fermées.
+Une organisation autre que l’émetteur DOIT l’exploiter.
+Avant de stocker de nouvelles entrées, le miroir DOIT vérifier que le nouveau point de contrôle prolonge le dernier stocké.
+Il DOIT servir sa copie par l’interface de LOG-036.
+Un miroir DEVRAIT suivre link:https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-mirror.md[C2SP tlog-mirror v0.1.0], et cosigner les points de contrôle qu’il stocke.
+
+Des archives nationales ou provinciales font un miroir tout désigné.
+Le journal survit alors à son exploitant, et un exploitant qui ferme ne peut pas emporter son historique.
+
+Le protocole des miroirs n’en est qu’à la version 0.1.0.
+Une version ultérieure de cette spécification prévoit d’en faire un DOIT quand le protocole atteindra la version 1.
+
+[[LOG-038]]
+*LOG-038.* Un journal DOIT contenir des entrées pour les documents d’un seul émetteur.
+Son interface d’écriture DOIT accepter des entrées seulement du service de cachet de cet émetteur, après authentification.
+La vigie de LOG-061 peut alors traiter comme un incident toute entrée que l’émetteur n’attendait pas.
+
+== Références
+
+=== Références normatives
+
+* link:https://www.rfc-editor.org/info/rfc6962[RFC 6962, Certificate Transparency], IETF, Experimental, 2013-06. link:https://web.archive.org/web/20261101080644/https://www.rfc-editor.org/info/rfc6962/[Copie archivée]
+* link:https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-checkpoint.md[Transparency Log Checkpoints], Community Cryptography Specification Project, v1.1.0, 2026-10-07.
+* link:https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-tiles.md[Tiled Transparency Logs], Community Cryptography Specification Project, v1.0.0, 2026-10-07.
+* link:https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-mirror.md[Transparency Log Mirrors], Community Cryptography Specification Project, v0.1.0, 2026-10-07.
+
+=== Références informatives
+
+* link:https://www.rfc-editor.org/info/rfc9162[RFC 9162, Certificate Transparency Version 2.0], IETF, Experimental, 2021-12. link:https://web.archive.org/web/20261014194404/https://www.rfc-editor.org/info/rfc9162/[Copie archivée]
+
+== Historique du document
+
+[cols="1,1,4",options="header"]
+|===
+|Version |Date |Changement
+|0.1.0 |2026-11-11 |Première version.
+|===
