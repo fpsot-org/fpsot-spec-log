@@ -1,12 +1,109 @@
 # Comparison data. The format is defined by fpsot-spec-doc (model/jurisdiction.yaml).
-# This example row compares requirement TPL-001. Replace it with the rows of this specification.
-# Add one file per jurisdiction, such as ca.yaml or ca/qc.yaml, only when a source exists.
 topics:
-  keywords: {en: Requirement keywords, fr: Mots clés des exigences}
+  seal-formats: {en: Seal formats, fr: Formats de cachet}
+  seal-levels: {en: Seal levels, fr: Niveaux de cachet}
+  trust-anchors: {en: Trust anchors and assurance levels, fr: Ancres de confiance et niveaux d’assurance}
+  algorithms: {en: Seal algorithms, fr: Algorithmes de cachet}
+  time-stamps: {en: Time stamps, fr: Horodatage}
+  log-entries: {en: Log entries and privacy, fr: Entrées du journal et vie privée}
+  log-shards: {en: Log shards and mirrors, fr: Tranches et miroirs du journal}
+  witnesses: {en: Witnesses, fr: Témoins}
+  proofs: {en: Proofs for readers, fr: Preuves pour les lecteurs}
+  preservation: {en: Long-term preservation, fr: Préservation à long terme}
 rows:
-  - id: TPL-001
-    topic: keywords
-    requirement: {en: Use the BCP 14 keywords., fr: Utiliser les mots clés du BCP 14.}
-    international: {en: "BCP 14 defines MUST, SHOULD and MAY. Only the capital forms carry that meaning.", fr: "Le BCP 14 définit MUST, SHOULD et MAY. Seules les majuscules ont ce sens."}
-    international_source: {title: "RFC 8174, Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words (BCP 14)", version: "BCP 14", date: "2017-05", url: "https://www.rfc-editor.org/info/rfc8174", archive: "https://web.archive.org/web/20261103005743/https://www.rfc-editor.org/info/rfc8174/"}
-    fpsot: {en: "Keywords in capitals, with a fixed French mapping.", fr: "Mots clés en majuscules, avec une correspondance française fixe."}
+  - id: LOG-010
+    topic: seal-formats
+    requirement: {en: "Seal each record in a format of the European list of advanced signature formats, at its pinned version.", fr: "Apposer le cachet de chaque document dans un format de la liste européenne des formats de signature avancée, à sa version fixée."}
+    international: {en: "Public bodies of the European Union must accept XAdES, CAdES, PAdES, JAdES and ASiC at pinned ETSI versions from 23 February 2027. The older formats count only for signatures made before 23 February 2028.", fr: "Les organismes publics de l’Union européenne doivent accepter XAdES, CAdES, PAdES, JAdES et ASiC à des versions ETSI fixées dès le 23 février 2027. Les anciens formats ne valent que pour les signatures faites avant le 23 février 2028."}
+    international_source: {title: "Commission Implementing Regulation (EU) 2026/248, Annexes I and II", date: "2026-02-02", url: "https://eur-lex.europa.eu/eli/reg_impl/2026/248/oj/eng", archive: "https://web.archive.org/web/20260919010505/https://eur-lex.europa.eu/eli/reg_impl/2026/248/oj/eng"}
+    fpsot: {en: "The same list, with the format chosen by media type: JAdES for JSON, PAdES for PDF, XAdES for XML, CAdES in ASiC-E for the rest.", fr: "La même liste, avec un format choisi selon le type de média : JAdES pour le JSON, PAdES pour le PDF, XAdES pour le XML, CAdES dans ASiC-E pour le reste."}
+  - id: LOG-013
+    topic: seal-levels
+    requirement: {en: "Seal at level B-LT or higher.", fr: "Apposer le cachet au niveau B-LT ou à un niveau supérieur."}
+    international: {en: "The European list fixes formats, not levels. The ETSI baseline profiles define the levels from B-B to B-LTA.", fr: "La liste européenne fixe des formats, pas des niveaux. Les profils de base de l’ETSI définissent les niveaux de B-B à B-LTA."}
+    international_source: {title: "Commission Implementing Regulation (EU) 2026/248", date: "2026-02-02", url: "https://eur-lex.europa.eu/eli/reg_impl/2026/248/oj/eng", archive: "https://web.archive.org/web/20260919010505/https://eur-lex.europa.eu/eli/reg_impl/2026/248/oj/eng"}
+    fpsot: {en: "B-LT at sealing, so that the seal holds its certificates and revocation data. B-LTA is allowed.", fr: "B-LT au moment du cachet, pour que le cachet contienne ses certificats et ses données de révocation. B-LTA est permis."}
+  - id: LOG-015
+    topic: algorithms
+    requirement: {en: "Seal with ECDSA P-384 and SHA-384, or RSA of 3072 bits or more.", fr: "Apposer le cachet avec ECDSA P-384 et SHA-384, ou RSA de 3072 bits ou plus."}
+    international: {en: "RSA keys of 1900 to 2999 bits end on 31 December 2026. A signature that must stay valid after 2030 needs a hybrid scheme or a post-quantum algorithm.", fr: "Les clés RSA de 1900 à 2999 bits prennent fin le 31 décembre 2026. Une signature qui doit rester valide après 2030 exige un régime hybride ou un algorithme postquantique."}
+    international_source: {title: "ETSI TS 119 312, Cryptographic Suites (archived copy of the ETSI folder of this document)", version: "V2.1.1", date: "2026-06", url: "https://www.etsi.org/deliver/etsi_ts/119300_119399/119312/02.01.01_60/ts_119312v020101p.pdf", archive: "https://web.archive.org/web/20261023174853/https://www.etsi.org/deliver/etsi_ts/119300_119399/119312/"}
+    fpsot: {en: "ECDSA P-384 with SHA-384 by default, RSA of 3072 bits or more allowed, Ed25519 for log keys only. A hybrid with ML-DSA-87 is a planned change.", fr: "ECDSA P-384 avec SHA-384 par défaut, RSA de 3072 bits ou plus permis, Ed25519 pour les clés du journal seulement. Un hybride avec ML-DSA-87 est un changement prévu."}
+  - id: LOG-020
+    topic: time-stamps
+    requirement: {en: "Take each time stamp from an authority under a policy that meets ETSI EN 319 421.", fr: "Obtenir chaque horodatage d’une autorité dont la politique respecte ETSI EN 319 421."}
+    international: {en: "Qualified time stamps in the European Union follow EN 319 421 V1.3.1, with rules on the accuracy of time sources.", fr: "Les horodatages qualifiés de l’Union européenne suivent EN 319 421 V1.3.1, avec des règles sur la précision des sources de temps."}
+    international_source: {title: "Commission Implementing Regulation (EU) 2025/1929", date: "2025-09-29", url: "https://eur-lex.europa.eu/eli/reg_impl/2025/1929/oj/eng", archive: "https://web.archive.org/web/20260405113122/https://eur-lex.europa.eu/eli/reg_impl/2025/1929/oj/eng"}
+    fpsot: {en: "RFC 3161 tokens from an authority under EN 319 421 or an equivalent published policy, qualified where the issuer wants effect in the European Union, and a daily time stamp over a checkpoint.", fr: "Des jetons RFC 3161 d’une autorité sous EN 319 421 ou une politique équivalente publiée, qualifiée si l’émetteur veut un effet dans l’Union européenne, et un horodatage quotidien d’un point de contrôle."}
+  - id: LOG-031
+    topic: log-entries
+    requirement: {en: "Log only a salted hash of the exact sealed bytes of each record.", fr: "N’inscrire au journal qu’un condensé salé des octets cachetés exacts de chaque document."}
+    international: {en: "The proof format leaves the leaf to each application, and lets an unauthenticated extra line carry what a verifier needs to rebuild it.", fr: "Le format de preuve laisse la feuille à chaque application, et permet à une ligne extra non authentifiée de porter ce qu’il faut pour la reconstruire."}
+    international_source: {title: "C2SP tlog-proof, format c2sp.org/tlog-proof@v1, commit of 2026-10-07", url: "https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-proof.md", archive: "https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-proof.md"}
+    fpsot: {en: "SHA-256 over a random salt of 32 bytes or more, then the sealed bytes, as in OBS-111. The salt dies with the record.", fr: "Un SHA-256 d’un sel aléatoire d’au moins 32 octets, suivi des octets cachetés, comme dans OBS-111. Le sel disparaît avec le document."}
+  - id: LOG-035
+    topic: log-shards
+    requirement: {en: "Start a new log shard each year and before any change of algorithm.", fr: "Ouvrir une nouvelle tranche du journal chaque année et avant tout changement d’algorithme."}
+    international: {en: "A log cannot change its algorithms during its life. A retired log stays readable.", fr: "Un journal ne peut pas changer d’algorithme en cours de vie. Un journal retiré reste lisible."}
+    international_source: {title: "RFC 9162, Certificate Transparency Version 2.0", version: "Experimental", date: "2021-12", url: "https://www.rfc-editor.org/info/rfc9162", archive: "https://web.archive.org/web/20261014194404/https://www.rfc-editor.org/info/rfc9162/"}
+    fpsot: {en: "Yearly shards, closed with a witnessed and time-stamped final checkpoint, and at least one independent mirror.", fr: "Des tranches annuelles, fermées par un point de contrôle final attesté par les témoins et horodaté, et au moins un miroir indépendant."}
+  - id: LOG-041
+    topic: witnesses
+    requirement: {en: "Require at least two public witnesses and one domestic witness in a published policy.", fr: "Exiger au moins deux témoins publics et un témoin national dans une politique publiée."}
+    international: {en: "The policy format lets each verifier set its own quorum of witnesses. It sets no minimum.", fr: "Le format de politique permet à chaque vérificateur de fixer son propre quorum de témoins. Il ne fixe aucun minimum."}
+    international_source: {title: "C2SP tlog-policy, commit of 2026-10-07", url: "https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-policy.md", archive: "https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-policy.md"}
+    fpsot: {en: "A published policy per shard, with a group of public witnesses and a group of domestic witnesses, both required.", fr: "Une politique publiée par tranche, avec un groupe de témoins publics et un groupe de témoins nationaux, tous deux exigés."}
+  - id: LOG-050
+    topic: proofs
+    requirement: {en: "Deliver an offline proof with each published record.", fr: "Remettre une preuve hors ligne avec chaque document publié."}
+    international: {en: "A proof bundles the index, the inclusion path and the cosigned checkpoint, and works offline like a detached signature.", fr: "Une preuve regroupe l’index, le chemin d’inclusion et le point de contrôle cosigné, et fonctionne hors ligne comme une signature détachée."}
+    international_source: {title: "C2SP tlog-proof, format c2sp.org/tlog-proof@v1, commit of 2026-10-07", url: "https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-proof.md", archive: "https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-proof.md"}
+    fpsot: {en: "The same format, delivered with the record once the quorum has cosigned, with the salt only for those who may receive the record.", fr: "Le même format, remis avec le document une fois le quorum atteint, avec le sel seulement pour qui peut recevoir le document."}
+  - id: LOG-070
+    topic: preservation
+    requirement: {en: "Keep evidence records with strong hash trees for records that must stay verifiable past 2030.", fr: "Tenir des dossiers de preuves à arbres de hachage robustes pour les documents qui doivent rester vérifiables après 2030."}
+    international: {en: "Qualified archiving services must keep signatures trustworthy beyond their technological validity, under CEN/TS 18170 and ISO 14721.", fr: "Les services d’archivage qualifiés doivent garder les signatures dignes de confiance au-delà de leur validité technologique, selon CEN/TS 18170 et ISO 14721."}
+    international_source: {title: "Commission Implementing Regulation (EU) 2025/2532", date: "2025-12-16", url: "https://eur-lex.europa.eu/eli/reg_impl/2025/2532/oj", archive: "https://web.archive.org/web/20260703054020/https://eur-lex.europa.eu/eli/reg_impl/2025/2532/oj"}
+    fpsot: {en: "RFC 4998 or RFC 6283 evidence records with SHA-384 or stronger, renewed in bulk before algorithms weaken.", fr: "Des dossiers de preuves RFC 4998 ou RFC 6283 avec SHA-384 ou plus fort, renouvelés en bloc avant que les algorithmes faiblissent."}
+  - id: LOG-074
+    topic: preservation
+    requirement: {en: "Pack the archived sealed records as the reference model for archives describes.", fr: "Emballer les documents cachetés archivés comme le décrit le modèle de référence pour les archives."}
+    international: {en: "The reference model for archives describes packages that keep information together with the data on its provenance, context and fixity.", fr: "Le modèle de référence pour les archives décrit des paquets qui gardent l’information avec les données sur sa provenance, son contexte et son intégrité."}
+    international_source: {title: "ISO 14721:2025, Reference model for an open archival information system (OAIS)", version: "2025", url: "https://www.iso.org/standard/87471.html", archive: "https://web.archive.org/web/20260925064602/https://www.iso.org/standard/87471.html"}
+    fpsot: {en: "A recommendation to follow ETSI TS 119 511 V1.1.1 for preservation and ISO 14721:2025 for archive packages.", fr: "Une recommandation de suivre ETSI TS 119 511 V1.1.1 pour la préservation et ISO 14721:2025 pour les paquets d’archives."}
+  - id: LOG-017
+    topic: trust-anchors
+    requirement: {en: "Publish the trust-anchor sets that verify the seals and time stamps.", fr: "Publier les ensembles d’ancres de confiance qui vérifient les cachets et les horodatages."}
+    international: {en: "Each member state of the European Union publishes a trusted list of its qualified trust service providers, and the Commission publishes the list of those lists.", fr: "Chaque État membre de l’Union européenne publie une liste de confiance de ses prestataires de services de confiance qualifiés, et la Commission publie la liste de ces listes."}
+    international_source: {title: "Regulation (EU) No 910/2014, consolidated text, article 22", date: "2024-05-20", url: "https://eur-lex.europa.eu/eli/reg/2014/910/2024-05-20/eng", archive: "https://web.archive.org/web/20260220232615/https://eur-lex.europa.eu/eli/reg/2014/910/2024-05-20/eng"}
+    fpsot: {en: "Each issuer publishes its own trust-anchor sets, which can point to the European list, and verifiers trust no other anchor.", fr: "Chaque émetteur publie ses propres ensembles d’ancres de confiance, qui peuvent renvoyer à la liste européenne, et les vérificateurs ne se fient à aucune autre ancre."}
+  - id: LOG-018
+    topic: trust-anchors
+    requirement: {en: "Record the trust-anchor set and the assurance level of each seal.", fr: "Consigner l’ensemble d’ancres de confiance et le niveau d’assurance de chaque cachet."}
+    international: {en: "The regulation distinguishes advanced seals from qualified seals, which rest on a qualified certificate and a qualified device.", fr: "Le règlement distingue les cachets avancés des cachets qualifiés, qui reposent sur un certificat qualifié et un dispositif qualifié."}
+    international_source: {title: "Regulation (EU) No 910/2014, consolidated text, articles 3 and 35 to 40", date: "2024-05-20", url: "https://eur-lex.europa.eu/eli/reg/2014/910/2024-05-20/eng", archive: "https://web.archive.org/web/20260220232615/https://eur-lex.europa.eu/eli/reg/2014/910/2024-05-20/eng"}
+    fpsot: {en: "A scheme and a value in each seal manifest, from the federal levels, the Québec levels or the European kinds.", fr: "Un régime et une valeur dans chaque manifeste de cachet, tirés des niveaux fédéraux, des niveaux québécois ou des types européens."}
+  - id: LOG-081
+    topic: log-entries
+    requirement: {en: "Destroy a record and its salt together, and never remove its log entry.", fr: "Détruire ensemble un document et son sel, sans jamais retirer son entrée du journal."}
+    international: {en: "A tiled log may hide an old prefix of entries only under a retention policy of its ecosystem. Without such a policy, it must not prune.", fr: "Un journal en tuiles peut masquer un ancien préfixe d’entrées seulement selon une politique de conservation de son écosystème. Sans une telle politique, il ne doit pas élaguer."}
+    international_source: {title: "C2SP tlog-tiles, section Pruning", version: "v1.0.0", date: "2026-10-07", url: "https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-tiles.md", archive: "https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-tiles.md"}
+    fpsot: {en: "No pruning. The record and its salt go on schedule, and the leaf stays as a hash that reveals nothing.", fr: "Aucun élagage. Le document et son sel disparaissent selon le calendrier, et la feuille reste comme un condensé qui ne révèle rien."}
+  - id: LOG-083
+    topic: preservation
+    requirement: {en: "Keep a transfer record that links a new seal to the old record.", fr: "Tenir une trace de transfert qui relie un nouveau cachet à l’ancien document."}
+    international: {en: "The reference model for archives describes the migration of archived information to new forms, with information on its provenance kept beside it.", fr: "Le modèle de référence pour les archives décrit la migration de l’information archivée vers de nouvelles formes, avec l’information sur sa provenance conservée à côté."}
+    international_source: {title: "ISO 14721:2025, Reference model for an open archival information system (OAIS)", version: "2025", url: "https://www.iso.org/standard/87471.html", archive: "https://web.archive.org/web/20260925064602/https://www.iso.org/standard/87471.html"}
+    fpsot: {en: "A transfer record under OBS-105, with the old and new identifiers, the old log entry, the new seal, the method and the date.", fr: "Une trace de transfert selon OBS-105, avec l’ancien et le nouvel identifiant, l’ancienne entrée du journal, le nouveau cachet, la méthode et la date."}
+  - id: LOG-084
+    topic: log-shards
+    requirement: {en: "Treat each closed log shard as a records series with its own retention rule.", fr: "Traiter chaque tranche fermée du journal comme une série documentaire avec sa propre règle de conservation."}
+    international: {en: "The tiled log format leaves it to each ecosystem to say how long entries stay available.", fr: "Le format de journal en tuiles laisse à chaque écosystème le soin de dire combien de temps les entrées restent accessibles."}
+    international_source: {title: "C2SP tlog-tiles, section Retention Policies", version: "v1.0.0", date: "2026-10-07", url: "https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-tiles.md", archive: "https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-tiles.md"}
+    fpsot: {en: "A rule of the retention schedule for each shard, permanent for shards that hold permanent records.", fr: "Une règle du calendrier de conservation pour chaque tranche, permanente pour les tranches qui contiennent des documents permanents."}
+  - id: LOG-092
+    topic: algorithms
+    requirement: {en: "Keep an inventory of keys and algorithms, and plan the move to post-quantum algorithms.", fr: "Tenir un inventaire des clés et des algorithmes, et planifier le passage aux algorithmes postquantiques."}
+    international: {en: "The European roadmap asks for inventories by the end of 2026, and a move of high-risk cases, long-term retention included, by the end of 2030.", fr: "La feuille de route européenne demande des inventaires d’ici la fin de 2026, et le passage des cas à risque élevé, dont la conservation à long terme, d’ici la fin de 2030."}
+    international_source: {title: "NIS Cooperation Group, A Coordinated Implementation Roadmap for the Transition to Post-Quantum Cryptography", version: "1.1", date: "2025-06-11", url: "https://digital-strategy.ec.europa.eu/en/library/coordinated-implementation-roadmap-transition-post-quantum-cryptography", archive: "https://web.archive.org/web/20261031083319/https://digital-strategy.ec.europa.eu/en/library/coordinated-implementation-roadmap-transition-post-quantum-cryptography"}
+    fpsot: {en: "A yearly review of the inventory against ETSI TS 119 312 and ITSP.40.111, and a plan on the federal milestones.", fr: "Une revue annuelle de l’inventaire selon ETSI TS 119 312 et l’ITSP.40.111, et un plan aligné sur les jalons fédéraux."}

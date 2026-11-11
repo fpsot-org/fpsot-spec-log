@@ -1,0 +1,79 @@
+= Horodatage
+include::_fpsot-terms.adoc[]
+
+Un {term-time-stamp} est un jeton où une autorité de confiance signe un condensé et l’heure de sa réception.
+Il prouve qu’un document existait sous cette forme à ce moment.
+Ces règles fixent d’où vient l’heure d’un cachet et d’un point de contrôle.
+Elles visent l’émetteur, l’exploitant du journal et tout vérificateur.
+
+La recherche pour cette spécification n’a trouvé aucune autorité d’horodatage qualifiée au Canada ni au Québec.
+Les règles prennent donc la norme européenne de politique comme seuil.
+Un émetteur peut l’atteindre avec une autorité située hors d’Europe.
+
+== Horodatage des cachets
+
+[[LOG-020]]
+*LOG-020.* Un émetteur DOIT obtenir l’horodatage de chaque cachet d’une {abbr-tsa-first} qui suit le link:https://www.rfc-editor.org/info/rfc3161[RFC 3161].
+L’autorité DOIT appliquer une politique qui respecte link:https://www.etsi.org/deliver/etsi_en/319400_319499/319421/01.03.01_60/en_319421v010301p.pdf[ETSI EN 319 421 V1.3.1].
+Une politique équivalente que l’émetteur publie PEUT en tenir lieu.
+Certains émetteurs veulent l’effet d’un horodatage qualifié dans l’Union européenne.
+Un tel émetteur DOIT employer une autorité qu’une liste de confiance de l’Union européenne désigne comme qualifiée.
+L’heure vient d’une partie autre que l’émetteur, et l’émetteur ne peut donc pas antidater un document.
+
+Les lignes directrices du {abbr-tbs-first} exigent un horodatage de confiance à leur plus haut niveau d’assurance.
+Les règles européennes sur l’horodatage qualifié citent la même version d’EN 319 421.
+Elles le font dans le link:https://eur-lex.europa.eu/eli/reg_impl/2025/1929/oj/eng[règlement d’exécution 2025/1929 de l’Union européenne].
+
+[[LOG-021]]
+*LOG-021.* Un émetteur DOIT inscrire chaque autorité d’horodatage qu’il emploie dans un ensemble d’ancres de confiance de LOG-017.
+L’inscription DOIT donner l’identifiant de politique et les certificats de l’autorité.
+Chaque requête à une autorité DOIT hacher son entrée avec SHA-384 ou un condensé plus fort.
+ETSI TS 119 312 V2.1.1 demande SHA-384 ou plus fort quand les preuves doivent durer plus de 20 ans.
+
+[[LOG-022]]
+*LOG-022.* Le champ `sealedAt` du manifeste de cachet DOIT contenir l’heure du jeton d’horodatage.
+Il NE DOIT PAS contenir l’heure d’une horloge locale.
+Chaque système qui appose des cachets ou tient le journal DOIT synchroniser son horloge selon OBS-033.
+Un vérificateur lit alors une seule heure, dont une partie autre que l’émetteur s’est portée garante.
+
+== Horodatage des points de contrôle
+
+[[LOG-023]]
+*LOG-023.* Un exploitant de journal DOIT obtenir un horodatage sur au moins un point de contrôle par jour.
+Il DEVRAIT en obtenir un sur chaque point de contrôle.
+Le jeton DOIT couvrir le condensé SHA-384 du texte du point de contrôle suivi de la signature du journal.
+Ce condensé NE DOIT PAS couvrir les cosignatures.
+Il DOIT venir d’une autorité de LOG-020.
+L’exploitant DOIT publier chaque jeton à côté de son point de contrôle.
+
+Les témoins ajoutent leurs cosignatures plus tard, et le condensé ne doit donc pas en dépendre.
+Une signature de journal Ed25519 ne contient aucune heure, comme le note OBS-112.
+Le jeton rattache à une heure de confiance chaque document sous ce point de contrôle.
+Il amorce aussi le dossier de preuves de LOG-075.
+
+[[LOG-024]]
+*LOG-024.* Un vérificateur NE DOIT PAS traiter l’heure d’une cosignature de témoin comme un horodatage de confiance.
+Il PEUT signaler l’écart entre l’heure de la cosignature et l’horodatage de LOG-023.
+Chaque témoin affirme sa propre heure, et aucune règle n’encadre son horloge.
+L’heure d’une cosignature appuie donc l’horodatage, sans le remplacer.
+
+== Références
+
+=== Références normatives
+
+* link:https://www.rfc-editor.org/info/rfc3161[RFC 3161, Internet X.509 Public Key Infrastructure Time-Stamp Protocol (TSP)], IETF, Proposed Standard, 2001-08. link:https://web.archive.org/web/20261104025145/https://www.rfc-editor.org/info/rfc3161/[Copie archivée]
+* link:https://www.etsi.org/deliver/etsi_en/319400_319499/319421/01.03.01_60/en_319421v010301p.pdf[ETSI EN 319 421, Policy and Security Requirements for Trust Service Providers issuing Time-Stamps], ETSI, V1.3.1, 2025-07. link:https://web.archive.org/web/20260925181041/https://www.etsi.org/deliver/etsi_en/319400_319499/319421/01.03.01_60/en_319421v010301p.pdf[Copie archivée]
+
+=== Références informatives
+
+* link:https://eur-lex.europa.eu/eli/reg_impl/2025/1929/oj/eng[Commission Implementing Regulation (EU) 2025/1929, binding of date and time to data and accuracy of time sources for qualified electronic time stamps], Union européenne, 2025-09-29. link:https://web.archive.org/web/20260405113122/https://eur-lex.europa.eu/eli/reg_impl/2025/1929/oj/eng[Copie archivée]
+* link:https://www.etsi.org/deliver/etsi_ts/119300_119399/119312/02.01.01_60/ts_119312v020101p.pdf[ETSI TS 119 312, Cryptographic Suites], ETSI, V2.1.1, 2026-06. link:https://web.archive.org/web/20261023174853/https://www.etsi.org/deliver/etsi_ts/119300_119399/119312/[Copie archivée du dossier de l’ETSI qui énumère cette version]
+* link:https://www.canada.ca/en/government/system/digital-government/online-security-privacy/government-canada-guidance-using-electronic-signatures.html[Government of Canada Guidance on Using Electronic Signatures], Secrétariat du Conseil du Trésor du Canada, version 1.0, 2019-07-15. link:https://web.archive.org/web/20251118051144/https://www.canada.ca/en/government/system/digital-government/online-security-privacy/government-canada-guidance-using-electronic-signatures.html[Copie archivée]
+
+== Historique du document
+
+[cols="1,1,4",options="header"]
+|===
+|Version |Date |Changement
+|0.1.0 |2026-11-11 |Première version.
+|===

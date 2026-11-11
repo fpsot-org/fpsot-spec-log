@@ -1,0 +1,102 @@
+= Questions pour le conseiller juridique
+include::_fpsot-terms.adoc[]
+
+Cette page est informative.
+Elle ne fixe aucune règle, et elle ne constitue pas un avis juridique.
+Elle énumère les questions juridiques que soulève cette spécification sans pouvoir y répondre.
+Une ou un juriste doit répondre à chacune avant que la {abbr-fpsot-first} ou un émetteur s’y fie.
+La recherche a lu les lois du Québec par des sources secondaires, car leur site officiel refuse les lecteurs automatisés.
+Un numéro d’article marqué _à vérifier_ vient d’une telle source, et non de la loi elle-même.
+
+== Cachets et preuve
+
+1. *Cachet d’un organisme.* Une loi du Québec sur les technologies de l’information lie la valeur d’un document à son intégrité.
+Une signature lie un document tant que le lien entre eux est maintenu.
+Un document muni d’un cachet d’organisation et d’une preuve de journal attestée par des témoins remplit-il ces deux conditions?
+Les articles en cause sont les articles 5 à 7, 38 et 39, _à vérifier_.
+Un cachet d’organisation constitue-t-il une signature au sens de l’article 2827 du Code civil du Québec, _à vérifier_?
+Ou n’est-il qu’un moyen de relier un organisme à un document?
+
+2. *Cachets étrangers.* L’Union européenne donne à certains cachets et signatures le statut de qualifiés.
+Un tel cachet bénéficie-t-il d’une présomption devant un tribunal québécois ou fédéral?
+Ou n’a-t-il que la force probante d’une preuve ordinaire?
+Les règles en cause sont l’article 31.1 de la link:https://laws-lois.justice.gc.ca/eng/acts/C-5/page-3.html[Loi sur la preuve au Canada].
+Elles comprennent aussi l’article 38 de la loi québécoise, _à vérifier_.
+Une source secondaire signale un protocole d’entente de décembre 2025 avec l’Union européenne.
+Ce protocole changerait-il la réponse?
+
+3. *Cachets et originaux fédéraux.* Deux articles d’une loi fédérale portent sur les sceaux et les originaux.
+Ce sont les articles 39 et 42 de la link:https://laws-lois.justice.gc.ca/eng/acts/P-8.6/page-5.html[Loi sur la protection des renseignements personnels et les documents électroniques].
+Une institution fédérale peut vouloir s’en prévaloir pour un cachet de cette spécification.
+Peut-elle le faire seulement quand l’annexe 2 ou 3 nomme la loi applicable?
+L’autorité de certification doit-elle être reconnue par le président du Conseil du Trésor selon l’article 4 du DORS/2005-30?
+Les lignes directrices du {abbr-tbs-first} indiquent que ce processus de reconnaissance est en cours de révision.
+
+4. *Certificats du gouvernement du Québec.* La directive de 2014 sur les services de certification gouvernementaux est-elle toujours en vigueur?
+Un organisme public québécois doit-il employer ses certificats pour les cachets sortants, ou peut-il employer une autre autorité de certification?
+
+5. *Poids de la spécification.* Un tribunal peut entendre une preuve sur une pratique de conservation des documents.
+L’article 31.5 de la Loi sur la preuve au Canada le permet.
+Un tribunal pourrait-il accorder du poids à cette spécification sur cette base?
+Pourrait-il le faire selon les articles 15 et 68 de la loi québécoise, _à vérifier_?
+Une certification selon la norme CAN/CGSB-72.34-2024 renforcerait-elle ce poids?
+La {abbr-fpsot} pourrait-elle compter comme organisme reconnu au sens de l’article 68, _à vérifier_?
+
+6. *Horodatage venu de l’étranger.* Certaines autorités d’horodatage se trouvent hors du Canada et de l’Union européenne.
+Une telle {abbr-tsa-first} peut-elle horodater des documents québécois sur lesquels un tribunal s’appuiera?
+Un horodatage qualifié de l’Union européenne ajoute-t-il un poids quelconque au Canada?
+
+== Documents, vie privée et conservation
+
+1. *Feuilles des documents détruits.* Après une destruction légale selon un calendrier de conservation, le journal garde un condensé salé.
+Le sel a disparu.
+Cette feuille reste-t-elle un renseignement personnel selon la loi québécoise sur l’accès?
+L’est-elle selon la loi fédérale sur la protection des renseignements personnels?
+
+2. *Le journal comme document.* Une tranche du journal est-elle un document que doit couvrir un calendrier de conservation?
+Ce calendrier serait celui d’un organisme québécois, ou une autorisation fédérale de disposition.
+Un organisme peut-il conserver une tranche en permanence quand elle contient les feuilles de documents qu’il doit détruire?
+
+3. *Évaluation des facteurs relatifs à la vie privée.* Les documents en cause contiennent des renseignements personnels.
+Un journal public de leurs condensés salés exige-t-il une {term-privacy-impact-assessment}?
+Des sources secondaires renvoient à l’article 63.5 de la loi québécoise sur l’accès, _à vérifier_.
+
+4. *Transferts.* L’article 17 de la loi québécoise demande de documenter un transfert, _à vérifier_.
+L’article 37 de la loi fédérale fixe des conditions à la conservation.
+Une trace de transfert selon LOG-083 satisfait-elle aux deux?
+Le fichier cacheté d’origine doit-il alors rester, et pendant combien de temps?
+
+== Témoins, miroirs et logiciels
+
+1. *Responsabilité d’un témoin.* Un organisme public ou la {abbr-fpsot} peut cosigner le journal d’un autre gouvernement.
+Quelle responsabilité découle d’une cosignature erronée ou manquante?
+Les conditions d’un témoin devraient-elles exclure toute confiance qu’on y accorderait?
+
+2. *Témoins à l’étranger.* Certains témoins et miroirs fonctionnent hors du Canada.
+Ils ne voient que des points de contrôle et des condensés.
+Cela soulève-t-il une question de résidence des données, ou de communication de renseignements personnels hors du Québec?
+
+3. *Licence de la bibliothèque de cachet.* La bibliothèque de la page xref:reference-stack.adoc[Pile de référence] a une licence à copyleft faible.
+Elle relève de la GNU Lesser General Public License 2.1.
+La {abbr-fpsot} peut-elle la lier dans un exécutable natif livré avec un logiciel sous la licence Apache 2.0?
+Quels éléments doit-elle alors fournir?
+Un utilisateur doit pouvoir lier de nouveau le programme avec une autre version de la bibliothèque.
+
+== Références
+
+=== Références informatives
+
+* link:https://laws-lois.justice.gc.ca/eng/acts/C-5/page-3.html[Canada Evidence Act, sections 31.1 to 31.8], gouvernement du Canada, à jour au 2026-10-19. link:https://web.archive.org/web/20260615182904/https://laws-lois.justice.gc.ca/eng/acts/c-5/page-3.html[Copie archivée]
+* link:https://laws-lois.justice.gc.ca/eng/acts/P-8.6/page-5.html[Personal Information Protection and Electronic Documents Act, Part 2], gouvernement du Canada, à jour au 2026-10-19. link:https://web.archive.org/web/20261022152622/https://laws-lois.justice.gc.ca/ENG/ACTS/P-8.6/page-5.html[Copie archivée]
+* link:https://laws-lois.justice.gc.ca/eng/regulations/SOR-2005-30/[Secure Electronic Signature Regulations, SOR/2005-30], gouvernement du Canada, à jour au 2026-10-19. link:https://web.archive.org/web/20260906225227/https://laws-lois.justice.gc.ca/eng/regulations/SOR-2005-30/[Copie archivée]
+* link:https://www.canada.ca/en/government/system/digital-government/online-security-privacy/government-canada-guidance-using-electronic-signatures.html[Government of Canada Guidance on Using Electronic Signatures], Secrétariat du Conseil du Trésor du Canada, version 1.0, 2019-07-15. link:https://web.archive.org/web/20251118051144/https://www.canada.ca/en/government/system/digital-government/online-security-privacy/government-canada-guidance-using-electronic-signatures.html[Copie archivée]
+* link:https://www.barreaudemontreal.qc.ca/wp-content/uploads/2017-guideti-documenttechnologique_fev2017.pdf[Guide TI, Le document technologique et son intégrité], Barreau de Montréal, 2017-02. link:https://web.archive.org/web/20260412025811/https://www.barreaudemontreal.qc.ca/wp-content/uploads/2017-guideti-documenttechnologique_fev2017.pdf[Copie archivée]
+* link:https://cdn-contenu.quebec.ca/cdn-contenu/adm/min/cybersecurite_numerique/Publications/Securite_information/Directive_services_certification.pdf[Directive sur les services de certification offerts par le gouvernement du Québec], gouvernement du Québec, Conseil du trésor, décret 6-2014, 2014-01-15. link:https://web.archive.org/web/20250915010310/https://cdn-contenu.quebec.ca/cdn-contenu/adm/min/cybersecurite_numerique/Publications/Securite_information/Directive_services_certification.pdf[Copie archivée]
+
+== Historique du document
+
+[cols="1,1,4",options="header"]
+|===
+|Version |Date |Changement
+|0.1.0 |2026-11-11 |Première version.
+|===

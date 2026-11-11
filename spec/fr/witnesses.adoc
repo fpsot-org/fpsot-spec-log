@@ -1,0 +1,123 @@
+= Témoins et politique
+include::_fpsot-terms.adoc[]
+
+Un exploitant de journal pourrait montrer un historique à un lecteur et un autre historique à quelqu’un d’autre.
+Cette attaque porte le nom de vue scindée.
+Un {term-witness} compare chaque nouveau point de contrôle au dernier qu’il a vu.
+Il ne cosigne le nouveau que si le journal n’a fait que croître.
+Un seul témoin prouve que le journal ne fait que croître.
+Plusieurs témoins indépendants rendent une vue scindée visible, car l’exploitant aurait besoin que tous mentent.
+
+La spécification sur l’observabilité fait d’un témoin un DEVRAIT, selon OBS-114.
+Cela convient à un journal d’audit que lit surtout son exploitant.
+Un journal de documents publics sert le public, les tribunaux et d’autres gouvernements.
+Cette page fait donc des témoins un DOIT.
+Elle est plus stricte qu’OBS-114, sans la contredire.
+
+Ces règles visent l’émetteur, chaque témoin et chaque vérificateur.
+
+== La politique
+
+[[LOG-040]]
+*LOG-040.* Un émetteur DOIT publier une politique de témoins pour chaque tranche, avant que la tranche reçoive sa première entrée.
+La politique DOIT suivre le format de link:https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-policy.md[C2SP tlog-policy], au commit que donne la page d’aperçu.
+Elle DOIT nommer la clé de journal de la tranche, chaque témoin avec sa clé, et exactement un quorum.
+Elle DOIT se trouver à une adresse {abbr-https-first} stable, que donne l’ensemble d’ancres de confiance de LOG-017.
+Un vérificateur sait alors, à partir du seul matériel publié, quelles cosignatures rendent un point de contrôle valide.
+Le fichier `examples/records-log.tlog-policy` montre une politique.
+
+[[LOG-041]]
+*LOG-041.* Le quorum de chaque politique DOIT exiger des cosignatures de ces deux groupes.
+
+* Au moins deux témoins publics indépendants de l’émetteur, selon LOG-042.
+* Au moins un témoin national responsable.
+Ce témoin est un organisme public du même pays que l’émetteur, mais pas l’émetteur lui-même.
+Ce peut être un autre ordre de gouvernement, un vérificateur général ou des archives nationales.
+
+Une politique NE DOIT PAS employer `quorum none`.
+Elle DEVRAIT nommer les deux groupes `public` et `domestic`, et les joindre dans un groupe au seuil `all`.
+Le groupe `public` DEVRAIT compter au moins trois témoins, pour que le journal garde son quorum quand un témoin tombe.
+Les témoins publics protègent contre une collusion nationale.
+Le témoin national est une partie qui répond devant le même public.
+Le projet Sigsum emploie un quorum semblable de deux témoins sur trois dans sa politique d’essai.
+
+[[LOG-042]]
+*LOG-042.* Un témoin DOIT être indépendant de l’émetteur et de l’exploitant du journal.
+Cela exclut la fonction d’archives de l’exploitant que permet OBS-114.
+Il DOIT appartenir à une autre organisation, détenir ses propres clés et fonctionner sur une infrastructure qu’ils ne contrôlent pas.
+L’émetteur DOIT publier, avec la politique, l’exploitant du journal, ainsi que l’exploitant et une adresse de contact de chaque témoin.
+Au moins une fois par année, l’émetteur DOIT vérifier les témoins et remplacer celui qui a cessé de cosigner.
+Un témoin que contrôle l’émetteur n’ajouterait rien à la preuve.
+
+Les réseaux publics de témoins sont encore jeunes.
+Les responsables de `witness-network.org` le décrivent comme expérimental, et ne publient aucun niveau de service.
+Une politique nomme donc des témoins, pas un réseau.
+
+== Témoins
+
+[[LOG-043]]
+*LOG-043.* Un témoin DEVRAIT cosigner avec ML-DSA-44 de la link:https://csrc.nist.gov/pubs/fips/204/final[FIPS 204], comme le recommande OBS-114.
+Il PEUT ajouter une cosignature Ed25519 au format de link:https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-cosignature.md[C2SP tlog-cosignature v1.1.0].
+Cette règle reprend OBS-114 et ajoute l’option Ed25519 qu’OBS-114 laisse ouverte.
+
+[[LOG-044]]
+*LOG-044.* Un témoin DOIT suivre link:https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-witness.md[C2SP tlog-witness v1.1.0].
+Il DOIT vérifier la preuve de cohérence de chaque nouveau point de contrôle avant de le cosigner.
+Il DOIT refuser un point de contrôle qui ne prolonge pas le dernier qu’il a cosigné.
+Il DEVRAIT servir aux vigies son dernier point de contrôle cosigné par journal, avec une heure de retard au plus.
+Les vigies peuvent alors comparer ce que chaque témoin a vu.
+
+== Changements et remise
+
+[[LOG-045]]
+*LOG-045.* Un émetteur NE DOIT PAS modifier une politique publiée.
+Il DEVRAIT changer de témoins seulement quand il ouvre une nouvelle tranche.
+Un témoin peut cesser en cours de tranche.
+L’émetteur PEUT alors publier une nouvelle version de la politique de cette tranche.
+
+Chaque version DOIT indiquer la première taille d’arbre qu’elle régit.
+Chaque version DOIT rester publiée tant qu’une preuve qui en relève doit rester vérifiable.
+Un vérificateur DOIT appliquer la version dont la plage contient la taille d’arbre du point de contrôle.
+
+Un lecteur peut alors vérifier une ancienne preuve avec les témoins de son époque.
+
+[[LOG-046]]
+*LOG-046.* Un émetteur NE DOIT PAS remettre une preuve dont le point de contrôle n’a pas son quorum.
+Il PEUT remettre d’abord un document cacheté.
+Il remet alors sa preuve quand le quorum a cosigné un point de contrôle qui le couvre.
+L’inventaire du déploiement DOIT indiquer le plus long délai entre un cachet et sa preuve.
+Une preuve sans son quorum laisserait passer une vue scindée.
+
+== Témoins exploités par le projet
+
+Cette section est informative.
+Aucun gouvernement n’exploite aujourd’hui de témoin public.
+Pour cette raison, la {abbr-fpsot-first} prévoit d’exploiter un témoin public.
+Elle demandera aussi à un organisme public national d’agir comme témoin pour un premier projet pilote.
+
+Tout émetteur peut l’inscrire dans sa politique, à côté d’autres témoins.
+Un témoin est un service durable.
+La {abbr-fpsot} publiera donc son exploitant, ses clés et ses conditions avant de commencer.
+
+== Références
+
+=== Références normatives
+
+* link:https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-policy.md[Transparency log trust policy], Community Cryptography Specification Project, sans étiquette de version, commit du 2026-10-07.
+* link:https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-witness.md[Transparency Log Witness Protocol], Community Cryptography Specification Project, v1.1.0, 2026-10-07.
+* link:https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-cosignature.md[Transparency Log Cosignatures], Community Cryptography Specification Project, v1.1.0, 2026-10-07.
+* link:https://csrc.nist.gov/pubs/fips/204/final[FIPS 204, Module-Lattice-Based Digital Signature Standard], NIST, 2024-08-13. link:https://web.archive.org/web/20261101165037/https://csrc.nist.gov/pubs/fips/204/final[Copie archivée]
+
+=== Références informatives
+
+* link:https://blog.transparency.dev/can-i-get-a-witness-network[Can I Get A Witness (Network)?], transparency.dev, 2024-11-07. link:https://web.archive.org/web/20261023112818/https://blog.transparency.dev/can-i-get-a-witness-network[Copie archivée]
+* link:https://witness-network.org/[Witness Network], communauté witness-network.org. link:https://web.archive.org/web/20261023190143/https://witness-network.org/[Copie archivée]
+* link:https://www.sigsum.org/getting-started/[Getting started], projet Sigsum. link:https://web.archive.org/web/20260627115118/https://www.sigsum.org/getting-started/[Copie archivée]
+
+== Historique du document
+
+[cols="1,1,4",options="header"]
+|===
+|Version |Date |Changement
+|0.1.0 |2026-11-11 |Première version.
+|===

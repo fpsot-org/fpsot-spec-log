@@ -1,0 +1,103 @@
+= Monitoring and incident response
+include::_fpsot-terms.adoc[]
+
+A seal proves that a key signed a record.
+It cannot prove that the issuer meant to issue that record.
+In 2021, people with valid access issued forged health certificates in the European Union, link:https://www.helpnetsecurity.com/2021/12/07/eu-key-management/[without any stolen key].
+Signature checks cannot catch that kind of failure.
+An append-only log, read by a {term-monitor} that knows what the issuer meant to issue, can catch it.
+
+These rules set how the issuer watches its own log and how it splits duties.
+They also set how it responds when a key or an algorithm fails.
+They apply to the issuer, to the log operator and to each monitor.
+
+== Register and monitor
+
+[[LOG-060]]
+*LOG-060.* An issuer MUST keep a register of each record that it seals.
+Each entry MUST give the `id` of the record and its seal manifest.
+It MUST also give the role that asked for the seal and the role that approved it.
+For the `seal-log` profiles, it MUST also give the shard and the index of the log entry.
+The register is the list of what the issuer meant to issue, against which a monitor compares the log.
+
+[[LOG-061]]
+*LOG-061.* An issuer MUST run a monitor, or have another party run one for it.
+The monitor MUST read each new entry and each new checkpoint of each shard, through the interface of LOG-036.
+It MUST raise an alert in each of these cases.
+
+* An entry matches no record of the register.
+* A checkpoint does not extend the last one that the monitor saw.
+* A key that the policy does not name signed a checkpoint.
+* A certificate that the issuer did not list sealed a record of the register.
+* A checkpoint lacks its quorum for longer than the delay of LOG-046.
+
+Each alert MUST reach the roles that the issuer names, and MUST create an audit event under LOG-064.
+The monitor MUST run under a role other than the sealing service.
+Anyone else MAY run a monitor, since the log is public.
+
+== Separation of duties
+
+[[LOG-062]]
+*LOG-062.* The role that may ask for a seal MUST differ from the role that administers the seal key.
+Each request for a seal MUST come from a person or a service that the identity and access specification authenticates.
+A second person MUST approve a request above a volume that the issuer sets, or outside the usual record types.
+Generating, backing up or rotating a seal key MUST need two people.
+One insider then cannot issue records alone, and the register shows who asked and who approved.
+
+== Incidents
+
+[[LOG-063]]
+*LOG-063.* An issuer MUST keep a written plan for these incidents, and MUST test it at least once a year.
+
+* A seal key or a log key leaks.
+* A flaw appears in the way someone generated a key.
+* An algorithm of a seal, a time stamp or the log becomes unsafe.
+
+The plan MUST cover these steps.
+
+1. Revoke the certificates and keys at stake, and close the shard at stake under LOG-035.
+2. Find every record at stake, through the register and the log.
+3. Seal those records again, with a transfer record under LOG-083.
+4. Tell the people and bodies that rely on the records, and publish a notice.
+
+In 2017, a link:https://nvd.nist.gov/vuln/detail/CVE-2017-15361[flaw in a chip] forced Estonia to suspend the certificates of about 760,000 identity cards.
+A plan that someone tested before the incident makes the response a routine.
+
+== Events
+
+[[LOG-064]]
+*LOG-064.* An issuer and a log operator MUST record these events as audit events of the observability specification.
+Each event MUST have the content of OBS-027.
+The names follow NAM-050 and NAM-051.
+
+[cols="2,3",options="header"]
+|===
+|Event |When
+|`org.fpsot.log.record.sealed` |The issuer seals a record.
+|`org.fpsot.log.record.resealed` |The issuer seals a record again, under LOG-083.
+|`org.fpsot.log.record.withdrawn` |The issuer withdraws a record, under LOG-082.
+|`org.fpsot.log.checkpoint.signed` |The log operator signs a checkpoint.
+|`org.fpsot.log.shard.closed` |The log operator closes a shard, under LOG-035.
+|`org.fpsot.log.policy.published` |The issuer publishes a policy or a new version of it, under LOG-045.
+|`org.fpsot.log.key.rotated` |The issuer or the log operator replaces a seal key or a log key.
+|`org.fpsot.log.alert.raised` |The monitor raises an alert, under LOG-061.
+|===
+
+An event MUST NOT hold the content of a record or its salt.
+It MUST NOT hold personal information about the people that the record names.
+It identifies the record by its `id` only.
+
+== References
+
+=== Informative
+
+* link:https://www.helpnetsecurity.com/2021/12/07/eu-key-management/[EU key management in 2022], Help Net Security, 2021-12-07. link:https://web.archive.org/web/20260308172347/https://www.helpnetsecurity.com/2021/12/07/eu-key-management/[Archived copy]
+* link:https://nvd.nist.gov/vuln/detail/CVE-2017-15361[CVE-2017-15361], NIST, National Vulnerability Database. link:https://web.archive.org/web/20260808045345/https://nvd.nist.gov/vuln/detail/CVE-2017-15361[Archived copy]
+
+== Document history
+
+[cols="1,1,4",options="header"]
+|===
+|Version |Date |Change
+|0.1.0 |2026-11-11 |First version.
+|===

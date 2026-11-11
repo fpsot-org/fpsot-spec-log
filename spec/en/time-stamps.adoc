@@ -1,0 +1,78 @@
+= Time stamps
+include::_fpsot-terms.adoc[]
+
+A {term-time-stamp} is a token in which a trusted authority signs a hash and the time it saw it.
+It proves that a record existed in that form at that time.
+These rules set where the time of a seal and of a checkpoint comes from.
+They apply to the issuer, to the log operator and to any verifier.
+
+The research for this specification found no qualified time-stamp authority in Canada or Québec.
+The rules therefore take the European policy standard as the bar.
+An issuer can meet it with an authority outside Europe.
+
+== Time stamps of seals
+
+[[LOG-020]]
+*LOG-020.* An issuer MUST take the time stamp of each seal from a {abbr-tsa-first} that follows link:https://www.rfc-editor.org/info/rfc3161[RFC 3161].
+The authority MUST operate under a policy that meets link:https://www.etsi.org/deliver/etsi_en/319400_319499/319421/01.03.01_60/en_319421v010301p.pdf[ETSI EN 319 421 V1.3.1].
+An equivalent policy that the issuer publishes MAY take its place.
+Some issuers want the effect of qualified time stamps in the European Union.
+Such an issuer MUST use a {abbr-tsa} that a trusted list of the European Union names as qualified.
+The time comes from a party other than the issuer, so the issuer cannot date a record after the fact.
+
+The guidance of the {abbr-tbs-first} asks for a trusted time stamp at its highest level of assurance.
+The European rules on qualified time stamps cite the same version of EN 319 421.
+They do so in link:https://eur-lex.europa.eu/eli/reg_impl/2025/1929/oj/eng[Implementing Regulation 2025/1929 of the European Union].
+
+[[LOG-021]]
+*LOG-021.* An issuer MUST list each {abbr-tsa} that it uses in a trust-anchor set of LOG-017.
+The entry MUST give the policy identifier and the certificates of the authority.
+Each request to an authority MUST hash its input with SHA-384 or a stronger hash.
+ETSI TS 119 312 V2.1.1 asks for SHA-384 or stronger when proofs must last beyond 20 years.
+
+[[LOG-022]]
+*LOG-022.* The `sealedAt` field of the seal manifest MUST hold the time of the time-stamp token.
+It MUST NOT hold the time of a local clock.
+Each system that seals or logs records MUST synchronize its clock under OBS-033.
+A verifier then reads one time, which a party other than the issuer vouched for.
+
+== Time stamps of checkpoints
+
+[[LOG-023]]
+*LOG-023.* A log operator MUST take a time stamp over at least one checkpoint each day.
+It SHOULD take one over each checkpoint.
+The token MUST cover the SHA-384 hash of the checkpoint text followed by the log signature line.
+That hash MUST NOT cover the cosignatures.
+It MUST come from an authority of LOG-020.
+The log operator MUST publish each token beside its checkpoint.
+
+Witnesses add their cosignatures later, so the hash must not depend on them.
+An Ed25519 log signature holds no time, as OBS-112 notes.
+The token ties every record under that checkpoint to a trusted time, and it starts the evidence record of LOG-075.
+
+[[LOG-024]]
+*LOG-024.* A verifier MUST NOT treat the time inside a witness cosignature as a trusted time stamp.
+It MAY report the gap between the cosignature time and the time stamp of LOG-023.
+Each witness asserts its own time, and no rule binds that clock.
+A cosignature time therefore supports the time stamp, and does not replace it.
+
+== References
+
+=== Normative
+
+* link:https://www.rfc-editor.org/info/rfc3161[RFC 3161, Internet X.509 Public Key Infrastructure Time-Stamp Protocol (TSP)], IETF, Proposed Standard, 2001-08. link:https://web.archive.org/web/20261104025145/https://www.rfc-editor.org/info/rfc3161/[Archived copy]
+* link:https://www.etsi.org/deliver/etsi_en/319400_319499/319421/01.03.01_60/en_319421v010301p.pdf[ETSI EN 319 421, Policy and Security Requirements for Trust Service Providers issuing Time-Stamps], ETSI, V1.3.1, 2025-07. link:https://web.archive.org/web/20260925181041/https://www.etsi.org/deliver/etsi_en/319400_319499/319421/01.03.01_60/en_319421v010301p.pdf[Archived copy]
+
+=== Informative
+
+* link:https://eur-lex.europa.eu/eli/reg_impl/2025/1929/oj/eng[Commission Implementing Regulation (EU) 2025/1929, binding of date and time to data and accuracy of time sources for qualified electronic time stamps], European Union, 2025-09-29. link:https://web.archive.org/web/20260405113122/https://eur-lex.europa.eu/eli/reg_impl/2025/1929/oj/eng[Archived copy]
+* link:https://www.etsi.org/deliver/etsi_ts/119300_119399/119312/02.01.01_60/ts_119312v020101p.pdf[ETSI TS 119 312, Cryptographic Suites], ETSI, V2.1.1, 2026-06. link:https://web.archive.org/web/20261023174853/https://www.etsi.org/deliver/etsi_ts/119300_119399/119312/[Archived copy of the ETSI folder that lists this version]
+* link:https://www.canada.ca/en/government/system/digital-government/online-security-privacy/government-canada-guidance-using-electronic-signatures.html[Government of Canada Guidance on Using Electronic Signatures], Treasury Board of Canada Secretariat, version 1.0, 2019-07-15. link:https://web.archive.org/web/20251118051144/https://www.canada.ca/en/government/system/digital-government/online-security-privacy/government-canada-guidance-using-electronic-signatures.html[Archived copy]
+
+== Document history
+
+[cols="1,1,4",options="header"]
+|===
+|Version |Date |Change
+|0.1.0 |2026-11-11 |First version.
+|===

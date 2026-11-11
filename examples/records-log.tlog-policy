@@ -1,0 +1,21 @@
+# Witness policy of the log shard records.example.org/notices-2027 (LOG-040).
+# Synthetic example: the names use domains reserved for documentation, and the keys are example keys.
+# Version 1 of the policy of this shard. It governs the shard from tree size 0 (LOG-045).
+# The example check counts only Ed25519 cosignatures toward the quorum. It does not count
+# ML-DSA-44 cosignatures, which LOG-043 recommends, so these example witnesses use Ed25519 keys.
+
+log records.example.org/notices-2027+3a5b0651+AUoHjY58xTHBt2YI+SY/rIMILs4N07QNRxU/jRSiYRkd https://records.example.org/notices-2027/
+
+# Public witnesses that the issuer does not run (LOG-041, LOG-042).
+witness alpha witness.example.net/alpha+87182716+BF2ykSyHeHJwnvOG+h1Vj7aGmwHJaXQRLPRrIQ3n1vce
+witness beta witness.example.com/beta+e966ab90+BD9nnkxq35cI2jHwW0OsWK7Oc0dVqpNMrmQE7srZyqEQ
+witness gamma witness.example.net/gamma+cae688f7+BMhW7BCmIq8/vDXKpuCcpUxl27CF+2Va7DTe8gWJCovg
+group public 2 alpha beta gamma
+
+# Accountable domestic witnesses, such as an archives or an auditor general (LOG-041).
+witness archives archives.example/witness+2992bec4+BK00qSXSGkWl62tYJUVYAC3FaEbT52yuvKKktXeOCyu4
+witness auditor auditor.example/witness+2dfe023d+BDNmYdAT/X/I+0APqSqdx8gKhFzFMVDlpnrsV9ddc4J2
+group domestic any archives auditor
+
+group public-and-domestic all public domestic
+quorum public-and-domestic

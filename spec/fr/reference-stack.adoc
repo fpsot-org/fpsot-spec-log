@@ -1,0 +1,95 @@
+= Pile de référence
+include::_fpsot-terms.adoc[]
+
+Cette page est informative.
+Elle ne fixe aucune règle, et aucune règle de cette spécification n’exige un produit qu’elle nomme.
+Elle nomme les produits libres qu’emploie la {abbr-fpsot-first} pour bâtir et éprouver sa mise en œuvre de référence.
+Tout produit qui respecte les règles peut les remplacer.
+
+== Produits et versions
+
+La bibliothèque de référence pour les cachets est le link:https://github.com/esig/dss/blob/98ab6c136fc90bfca78352b4e673e2eae72b7d5a/README.md[Digital Signature Service de la Commission européenne, version 6.5.1].
+Sa publication date du 14 octobre 2026.
+C’est une bibliothèque Java sous la GNU Lesser General Public License 2.1, dans le groupe `eu.europa.ec.joinup.sd-dss`.
+Sa nomenclature de versions est `dss-bom`.
+
+Elle crée et valide les quatre formats de LOG-010 et leurs conteneurs ASiC.
+Elle lit aussi les listes de confiance de l’Union européenne.
+Elle crée et valide les dossiers de preuves de LOG-070.
+Depuis la version 6.3, elle peut intégrer un dossier de preuves à une signature ou à un conteneur ASiC.
+Ses notes de version jusqu’à 6.5.1 ne mentionnent aucun algorithme postquantique.
+
+Le service de référence fait fonctionner cette bibliothèque sur Quarkus 3.40, une branche à soutien prolongé, en mode JVM.
+La link:https://ec.europa.eu/digital-building-blocks/DSS/webapp-demo/doc/dss-documentation.html[documentation de la bibliothèque] ne mentionne pas d’exécutable natif.
+La bibliothèque repose sur la réflexion, la liaison XML et le chargement de services, qu’une compilation native devrait déclarer.
+Lier la bibliothèque dans un exécutable natif soulève aussi une question de licence.
+La page xref:questions-for-counsel.adoc[Questions pour le conseiller juridique] la pose.
+
+Le journal de référence est link:https://github.com/transparency-dev/tessera/blob/6bca8e8d5e23c9941f2b8a08f512b373f7131730/README.md[Tessera v1.0.4], une bibliothèque Go sous la licence Apache 2.0.
+Il sert l’interface de LOG-036.
+Le journal de transparence du projet Sigstore, link:https://blog.sigstore.dev/rekor-v2-ga/[Rekor version 2], repose sur Tessera et emploie des tranches annuelles.
+Le journal est un service distinct, et le langage de son code ne touche donc pas les services qui l’appellent.
+
+Le témoin de référence est link:https://github.com/transparency-dev/witness/blob/3dd65b08474a6e65af4a7f125ae5756a65f3a6de/README.md[OmniWitness], sous la licence Apache 2.0.
+Il suit le protocole des témoins de LOG-044.
+
+== La bibliothèque de vérification
+
+La recherche de la {abbr-fpsot} n’a trouvé aucune bibliothèque Java qui vérifie les points de contrôle et les preuves C2SP.
+Le client Java de Sigstore ne couvre que l’écosystème Sigstore.
+Sa version 2.0.0 a aussi retiré un contrôle de l’heure, que la version 2.1.0 a rétabli.
+
+Pour cette raison, la {abbr-fpsot} prévoit une petite bibliothèque Java sous la licence Apache 2.0.
+Elle lira les notes signées, vérifiera les signatures Ed25519 et ML-DSA-44, et contrôlera les preuves d’inclusion et de cohérence.
+Elle lira aussi les preuves et évaluera les politiques, pour servir LOG-054 et les contrôles d’OBS-115.
+Le script `examples/check-examples.py` montre la même logique en quelques centaines de lignes de Python.
+
+== Comment les parties s’agencent
+
+[source,plantuml]
+----
+@startuml
+actor "Membre du personnel" as Staff
+actor "Citoyenne ou tribunal" as Reader
+node "Service de cachet\n(Quarkus, mode JVM, DSS)" as Seal
+node "Autorité d'horodatage" as TSA
+node "Journal de transparence\n(Tessera)" as Log
+node "Témoins\n(publics et nationaux)" as Wit
+node "Miroir\n(des archives)" as Mirror
+node "Vigie" as Mon
+node "Vérificateur\n(bibliothèque FPSOT)" as Ver
+Staff --> Seal : demande, deuxième approbation
+Seal --> TSA : requête RFC 3161
+Seal --> Log : condensé salé des octets cachetés
+Log --> Wit : nouveau point de contrôle et preuve de cohérence
+Wit --> Log : cosignature
+Log --> Mirror : tuiles et points de contrôle
+Mon --> Log : lit chaque entrée
+Seal --> Reader : document cacheté et sa preuve
+Reader --> Ver : document, preuve, politique
+@enduml
+----
+
+Le diagramme montre un membre du personnel qui demande un cachet, et une deuxième personne qui l’approuve.
+Le service appose le cachet, obtient un horodatage et ajoute le condensé salé au journal.
+Les témoins cosignent chaque point de contrôle, et un miroir garde une copie.
+La vigie lit chaque entrée et la compare avec le registre de l’émetteur.
+Le lecteur reçoit le document et sa preuve, et vérifie les deux hors ligne avec le vérificateur.
+
+== Références
+
+=== Références informatives
+
+* link:https://github.com/esig/dss/blob/98ab6c136fc90bfca78352b4e673e2eae72b7d5a/README.md[DSS, Digital Signature Service, README at the tag 6.5.1], Commission européenne, 2026-10-14. Épinglé à un commit.
+* link:https://ec.europa.eu/digital-building-blocks/DSS/webapp-demo/doc/dss-documentation.html[DSS documentation], Commission européenne. link:https://web.archive.org/web/20261006235711/https://ec.europa.eu/digital-building-blocks/DSS/webapp-demo/doc/dss-documentation.html[Copie archivée]
+* link:https://github.com/transparency-dev/tessera/blob/6bca8e8d5e23c9941f2b8a08f512b373f7131730/README.md[Tessera README, at the tag v1.0.4], projet transparency-dev, 2026-07-16. Épinglé à un commit.
+* link:https://blog.sigstore.dev/rekor-v2-ga/[Rekor v2 GA], projet Sigstore, 2025-10-10. link:https://web.archive.org/web/20261103121316/https://blog.sigstore.dev/rekor-v2-ga/[Copie archivée]
+* link:https://github.com/transparency-dev/witness/blob/3dd65b08474a6e65af4a7f125ae5756a65f3a6de/README.md[OmniWitness README], projet transparency-dev, 2026-11-09. Épinglé à un commit.
+
+== Historique du document
+
+[cols="1,1,4",options="header"]
+|===
+|Version |Date |Changement
+|0.1.0 |2026-11-11 |Première version.
+|===

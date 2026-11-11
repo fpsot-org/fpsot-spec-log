@@ -1,0 +1,106 @@
+= Vigie et réponse aux incidents
+include::_fpsot-terms.adoc[]
+
+Un cachet prouve qu’une clé a signé un document.
+Il ne peut pas prouver que l’émetteur voulait émettre ce document.
+En 2021, des personnes munies d’un accès valide ont émis de faux certificats sanitaires dans l’Union européenne.
+Elles l’ont fait link:https://www.helpnetsecurity.com/2021/12/07/eu-key-management/[sans aucune clé volée].
+Le contrôle des signatures ne peut pas déceler ce genre de défaillance.
+Un journal en ajout seul, lu par une {term-monitor} qui sait ce que l’émetteur voulait émettre, peut la déceler.
+
+Ces règles fixent comment l’émetteur surveille son propre journal et comment il sépare les tâches.
+Elles fixent aussi comment il réagit quand une clé ou un algorithme cède.
+Elles visent l’émetteur, l’exploitant du journal et chaque vigie.
+
+== Registre et vigie
+
+[[LOG-060]]
+*LOG-060.* Un émetteur DOIT tenir un registre de chaque document sur lequel il appose un cachet.
+Chaque inscription DOIT donner l’`id` du document et son manifeste de cachet.
+Elle DOIT aussi donner le rôle qui a demandé le cachet et le rôle qui l’a approuvé.
+Pour les profils `seal-log`, elle DOIT aussi donner la tranche et l’index de l’entrée du journal.
+Le registre est la liste de ce que l’émetteur voulait émettre, et la vigie y compare le journal.
+
+[[LOG-061]]
+*LOG-061.* Un émetteur DOIT exploiter une vigie, ou en faire exploiter une pour son compte.
+La vigie DOIT lire chaque nouvelle entrée et chaque nouveau point de contrôle de chaque tranche, par l’interface de LOG-036.
+Elle DOIT lever une alerte dans chacun de ces cas.
+
+* Une entrée ne correspond à aucun document du registre.
+* Un point de contrôle ne prolonge pas le dernier qu’a vu la vigie.
+* Une clé que la politique ne nomme pas a signé un point de contrôle.
+* Un certificat que l’émetteur n’a pas inscrit a cacheté un document du registre.
+* Un point de contrôle reste sans quorum plus longtemps que le délai de LOG-046.
+
+Chaque alerte DOIT parvenir aux rôles que nomme l’émetteur, et DOIT créer un événement d’audit selon LOG-064.
+La vigie DOIT fonctionner sous un autre rôle que le service de cachet.
+Toute autre partie PEUT exploiter une vigie, puisque le journal est public.
+
+== Séparation des tâches
+
+[[LOG-062]]
+*LOG-062.* Le rôle qui peut demander un cachet DOIT différer du rôle qui administre la clé de cachet.
+Chaque demande de cachet DOIT venir d’une personne ou d’un service qu’authentifie la spécification sur l’identité et l’accès.
+Une deuxième personne DOIT approuver une demande au-delà d’un volume que fixe l’émetteur, ou hors des types de documents habituels.
+Produire, sauvegarder ou remplacer une clé de cachet DOIT exiger deux personnes.
+Une personne de l’intérieur ne peut alors pas émettre de documents seule.
+Le registre montre qui a demandé et qui a approuvé.
+
+== Incidents
+
+[[LOG-063]]
+*LOG-063.* Un émetteur DOIT tenir un plan écrit pour ces incidents.
+Il DOIT le mettre à l’essai au moins une fois par année.
+
+* Une clé de cachet ou une clé de journal fuit.
+* Une faille apparaît dans la façon dont on a produit une clé.
+* Un algorithme d’un cachet, d’un horodatage ou du journal perd sa sûreté.
+
+Le plan DOIT couvrir ces étapes.
+
+1. Révoquer les certificats et les clés en cause, et fermer la tranche en cause selon LOG-035.
+2. Trouver chaque document en cause, par le registre et le journal.
+3. Apposer de nouveau un cachet sur ces documents, avec une trace de transfert selon LOG-083.
+4. Prévenir les personnes et les organismes qui se fient aux documents, et publier un avis.
+
+En 2017, une link:https://nvd.nist.gov/vuln/detail/CVE-2017-15361[faille dans une puce] a forcé l’Estonie à suspendre les certificats d’environ 760 000 cartes d’identité.
+Un plan mis à l’essai avant l’incident fait de la réponse une routine.
+
+== Événements
+
+[[LOG-064]]
+*LOG-064.* Un émetteur et un exploitant de journal DOIVENT consigner ces événements comme événements d’audit de la spécification sur l’observabilité.
+Chaque événement DOIT avoir le contenu d’OBS-027.
+Les noms suivent NAM-050 et NAM-051.
+
+[cols="2,3",options="header"]
+|===
+|Événement |Quand
+|`org.fpsot.log.record.sealed` |L’émetteur appose un cachet sur un document.
+|`org.fpsot.log.record.resealed` |L’émetteur appose de nouveau un cachet sur un document, selon LOG-083.
+|`org.fpsot.log.record.withdrawn` |L’émetteur retire un document, selon LOG-082.
+|`org.fpsot.log.checkpoint.signed` |L’exploitant du journal signe un point de contrôle.
+|`org.fpsot.log.shard.closed` |L’exploitant du journal ferme une tranche, selon LOG-035.
+|`org.fpsot.log.policy.published` |L’émetteur publie une politique ou une nouvelle version de celle-ci, selon LOG-045.
+|`org.fpsot.log.key.rotated` |L’émetteur ou l’exploitant du journal remplace une clé de cachet ou une clé de journal.
+|`org.fpsot.log.alert.raised` |La vigie lève une alerte, selon LOG-061.
+|===
+
+Un événement NE DOIT PAS contenir le contenu d’un document ni son sel.
+Il NE DOIT PAS contenir de renseignements personnels sur les personnes que nomme le document.
+Il désigne le document par son `id` seulement.
+
+== Références
+
+=== Références informatives
+
+* link:https://www.helpnetsecurity.com/2021/12/07/eu-key-management/[EU key management in 2022], Help Net Security, 2021-12-07. link:https://web.archive.org/web/20260308172347/https://www.helpnetsecurity.com/2021/12/07/eu-key-management/[Copie archivée]
+* link:https://nvd.nist.gov/vuln/detail/CVE-2017-15361[CVE-2017-15361], NIST, National Vulnerability Database. link:https://web.archive.org/web/20260808045345/https://nvd.nist.gov/vuln/detail/CVE-2017-15361[Copie archivée]
+
+== Historique du document
+
+[cols="1,1,4",options="header"]
+|===
+|Version |Date |Changement
+|0.1.0 |2026-11-11 |Première version.
+|===

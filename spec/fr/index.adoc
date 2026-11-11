@@ -1,8 +1,148 @@
 = Spécification FPSOT sur les documents signés et le journal de transparence
 include::_fpsot-terms.adoc[]
 
-Remplacez cette page par le texte normatif de la spécification.
-Commencez par la portée, puis les classes de conformité, puis les exigences.
+Cette spécification fixe comment un organisme public appose un cachet sur les documents qu’il émet.
+Elle fixe aussi comment il en publie la preuve et les garde vérifiables.
+Elle vise les documents sortants, comme une gazette, un extrait de registre, un permis ou une décision.
+Dans son nom, le mot « journal » désigne un {term-transparency-log} public de documents cachetés.
+Il ne désigne pas les journaux des logiciels, que vise la spécification FPSOT sur l’observabilité.
+
+Les règles superposent trois couches, et chacune repose sur une norme ouverte.
+
+* Le cachet prouve qui a émis un document.
+L’émetteur appose sur chaque document un cachet dans un format de signature avancée de l’{abbr-etsi-first}, avec un {term-time-stamp}.
+* Le journal de transparence prouve que l’émetteur a publié le document, et qu’il a montré le même historique à tous.
+Des témoins indépendants cosignent chaque {term-checkpoint} du journal.
+* Un {term-evidence-record} prouve que le document existe toujours sans changement, longtemps après que sa clé ou son algorithme a faibli.
+
+Chaque couche protège contre une défaillance différente.
+Un cachet tombe quand sa clé fuit ou que son algorithme cède.
+Un journal tombe quand son exploitant montre deux historiques ou disparaît.
+Un document qui porte les trois preuves résiste à chacune de ces défaillances.
+Les règles nomment des normes et des capacités, pas des produits.
+Les produits n’apparaissent que dans la page informative xref:reference-stack.adoc[Pile de référence].
+
+== Rôles
+
+[[LOG-001]]
+*LOG-001.* Chaque partie qui se déclare conforme DOIT indiquer lequel de ces rôles elle remplit.
+Une partie peut remplir plus d’un rôle.
+
+* L’émetteur est l’organisme public qui appose le cachet sur ses documents, les inscrit au journal et en répond.
+* L’exploitant du journal fait fonctionner le journal de transparence de l’émetteur.
+L’émetteur peut l’exploiter lui-même.
+* Un témoin est une partie indépendante qui compare chaque nouveau point de contrôle au dernier vu, puis le cosigne.
+* Une {term-monitor} lit chaque entrée du journal et la compare avec les documents que l’émetteur voulait émettre.
+* Un {term-mirror} garde une copie complète du journal et la diffuse, pour que le journal survive à son exploitant.
+* Un vérificateur vérifie un document, son cachet, son horodatage et sa preuve de publication.
+Toute personne, tout tribunal ou tout autre gouvernement peut agir comme vérificateur.
+* Un service de préservation garde valides les preuves d’un document pendant toute sa durée de conservation.
+
+Chaque règle nomme le rôle qu’elle vise.
+Un rôle nommé dit à l’acheteur quoi exiger de chaque fournisseur, et dit au testeur quoi vérifier.
+
+== Profils
+
+Un émetteur revendique un profil pour chaque série de documents qu’il émet.
+Chaque profil ajoute des règles à celui qui le précède.
+
+[cols="2,3,4",options="header"]
+|===
+|Profil |Ce qu’il prouve |Règles
+|`seal` |L’origine, l’intégrité et l’heure du cachet |LOG-001 à LOG-005, LOG-010 à LOG-022, LOG-053 à LOG-056, LOG-060, LOG-062 à LOG-064, LOG-080, LOG-083, LOG-090 à LOG-093
+|`seal-log` |Ajoute une preuve publique de publication, la même pour chaque lecteur |Les règles de `seal`, plus LOG-023, LOG-024, LOG-030 à LOG-052, LOG-057, LOG-061, LOG-081, LOG-082, LOG-084, LOG-085
+|`seal-log-preserve` |Ajoute la preuve de l’intégrité pour toute la durée de conservation |Les règles de `seal-log`, plus LOG-070 à LOG-075
+|===
+
+[[LOG-002]]
+*LOG-002.* Un émetteur DOIT indiquer le profil de chaque série de documents dans l’inventaire de son déploiement.
+Il DOIT respecter chaque règle DOIT du profil qu’il revendique.
+Un émetteur DOIT revendiquer au moins `seal-log` pour chaque série qu’il publie comme document public officiel.
+
+Un émetteur DOIT revendiquer `seal-log-preserve` pour chaque série qu’il conserve en permanence.
+Il DOIT aussi le revendiquer pour chaque série dont les documents doivent rester vérifiables après une date de fin.
+Cette date de fin est celle que donne l’inventaire de LOG-092 pour l’algorithme de cachet.
+Pour les algorithmes de LOG-015, cette date est au plus tard le 31 décembre 2030.
+La durée pendant laquelle les documents doivent rester vérifiables en décide, et non l’année du cachet.
+
+Un cachet seul prouve l’origine, mais pas que chaque lecteur a vu le même document.
+
+Un témoin, une vigie, un miroir, un vérificateur ou un service de préservation ne revendique aucun profil.
+Il respecte les règles qui nomment son rôle.
+
+== Statut juridique
+
+[[LOG-003]]
+*LOG-003.* Une déclaration de conformité NE DOIT PAS laisser entendre que la conformité confère un statut ou une présomption juridique.
+Elle DOIT nommer la {term-jurisdiction} dont le droit régit les documents.
+Elle DOIT nommer les ensembles d’ancres de confiance de LOG-017 qu’emploient les vérificateurs.
+La recherche n’a trouvé au Canada et au Québec ni palier de signatures qualifiées ni liste de confiance.
+Cette spécification fournit une preuve d’intégrité, et un tribunal en apprécie la valeur selon son propre droit.
+
+Cette spécification énonce la pratique de la {abbr-fpsot-first}, et elle ne constitue pas un avis juridique.
+Les points qui demandent un avis juridique figurent dans des notes informatives.
+Ils figurent aussi dans la page xref:questions-for-counsel.adoc[Questions pour le conseiller juridique].
+Ils ne figurent jamais dans une règle.
+
+== Versions et essais de conformité
+
+[[LOG-004]]
+*LOG-004.* Une mise en œuvre DOIT suivre les versions des normes externes que cette page énumère sous Normes.
+Elle PEUT suivre une version ultérieure de la même norme si les parties qu’elle emploie gardent le même sens.
+Les cachets, les journaux et les preuves doivent rester lisibles pendant des décennies.
+Chaque lecteur doit donc savoir quel texte s’applique.
+
+[[LOG-005]]
+*LOG-005.* Une suite de conformité de cette spécification DOIT vérifier la sortie d’une mise en œuvre, selon TST-044.
+La sortie comprend les documents cachetés, les manifestes de cachet, les points de contrôle, les politiques et les preuves.
+Elle NE DOIT PAS avoir besoin du code source de la mise en œuvre.
+Le dossier `examples/` contient les premiers jeux d’essai, et un outil de conformité suivra dans une version ultérieure.
+
+== Parties de la spécification
+
+Les règles se répartissent en dix parties, que suivent deux pages informatives.
+
+* xref:seals.adoc[Cachets et signatures] fixe les formats, les niveaux, les algorithmes, les clés et les ancres de confiance des cachets.
+* xref:time-stamps.adoc[Horodatage] fixe la source de l’heure de confiance.
+* xref:transparency-log.adoc[Journal de transparence] fixe l’arbre, les feuilles, les points de contrôle, les tranches et les miroirs.
+* xref:witnesses.adoc[Témoins et politique] fixe qui cosigne un point de contrôle, et la politique publiée qu’appliquent les vérificateurs.
+* xref:proofs.adoc[Preuves et vérification] fixe la preuve qui accompagne chaque document, et comment quiconque la vérifie.
+* xref:monitoring.adoc[Vigie et réponse aux incidents] fixe comment l’émetteur repère les entrées et les clés imprévues.
+* xref:preservation.adoc[Préservation à long terme] fixe les dossiers de preuves qui gardent un document vérifiable après que son cachet a faibli.
+* xref:retention.adoc[Conservation, caviardage et transfert] fixe comment l’émetteur conserve et détruit les documents, les sels et les tranches du journal.
+* xref:post-quantum.adoc[Agilité des algorithmes et postquantique] fixe comment les règles changent d’algorithme au fil du temps.
+* xref:reference-stack.adoc[Pile de référence] est informative, et nomme les produits qu’emploie la {abbr-fpsot} pour sa propre mise en œuvre.
+* xref:questions-for-counsel.adoc[Questions pour le conseiller juridique] est informative, et énumère les points qu’une ou un juriste doit trancher.
+
+== Spécifications connexes
+
+Cette spécification s’appuie sur d’autres spécifications de la {abbr-fpsot}, et cite leurs règles par numéro.
+
+* La spécification sur l’observabilité fixe l’arbre, les feuilles, les points de contrôle et les clés d’un journal inviolable.
+Elle le fait selon OBS-110 à OBS-117.
+Cette spécification applique ces règles aux documents cachetés et n’en change aucune.
+Elle y ajoute des règles sur les témoins, la politique et la preuve.
+* La spécification sur l’observabilité fixe aussi la conservation, la {term-legal-hold}, la destruction et les transferts.
+Elle le fait selon OBS-100 à OBS-105.
+Elle fixe les horloges selon OBS-033.
+* La spécification sur la sécurité fixe comment un projet garde ses clés et les change, selon SEC-020 et SEC-023.
+* La spécification sur les tests fixe les suites de conformité, selon TST-044.
+* La spécification sur le nommage fixe la forme des noms d’événements, de champs et de fichiers.
+Elle le fait selon NAM-050, NAM-040 et NAM-070.
+* La spécification sur l’identité et l’accès fixe comment le personnel s’authentifie avant de demander un cachet.
+
+== Exemples
+
+Le dossier `examples/` contient quatre fichiers fictifs qui respectent ces règles.
+
+* `sealed-record.txt` tient lieu des octets cachetés d’un document.
+Ce n’est pas un vrai cachet.
+* `records-log.tlog-policy` est la politique de témoins publiée d’une tranche du journal, selon LOG-040 et LOG-041.
+* `sealed-record.tlog-proof` est la preuve qui accompagne le document, selon LOG-050 et LOG-051.
+* `seal-manifest.json` est le manifeste de cachet du document, selon LOG-019.
+
+Le script `examples/check-examples.py` vérifie les signatures, le quorum, la feuille, la preuve d’inclusion et le manifeste.
+Le script `examples/test-examples.sh` vérifie qu’il rejette des copies altérées.
 
 == Conformité
 
@@ -11,35 +151,53 @@ ____
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in BCP 14 (link:https://www.rfc-editor.org/info/rfc2119[RFC 2119], link:https://www.rfc-editor.org/info/rfc8174[RFC 8174]) when, and only when, they appear in all capitals, as shown here.
 ____
 
-Les mots clés suivent l'exigence WRT-010 de la spécification de rédaction de la {abbr-fpsot-first}.
-La version française emploie les mots clés français de l'exigence WRT-011.
+Les mots clés suivent l’exigence WRT-010 de la spécification de rédaction de la {abbr-fpsot}.
+La version française emploie les mots clés français de l’exigence WRT-011.
 
-== Exigences
+== Normes
 
-Donnez à chaque exigence une ancre avec son identifiant, juste au-dessus de son paragraphe.
-L'ancre ressemble à `+[[XYZ-001]]+`.
-L'exemple ci-dessous montre la forme. Remplacez-le par la première exigence.
+Les règles résument les normes externes dans leurs propres mots et ne leur empruntent aucun texte.
+Elles citent les versions suivantes.
 
-[[TPL-001]]
-*TPL-001.* Un énoncé normatif DOIT employer un des mots clés du {abbr-bcp-first} 14, en majuscules.
-Le mot clé donne sa force à la règle.
+* Formats de cachet : la liste de l’annexe I du link:https://eur-lex.europa.eu/eli/reg_impl/2026/248/oj/eng[règlement d’exécution 2026/248 de l’Union européenne].
+Les organismes publics de l’Union européenne doivent accepter ces formats à compter du 23 février 2027.
+La page xref:seals.adoc[Cachets et signatures] donne chaque format et sa version.
+* Validation : link:https://www.etsi.org/deliver/etsi_en/319100_319199/31910201/01.04.01_60/en_31910201v010401p.pdf[ETSI EN 319 102-1 V1.4.1], avec des rapports dans la forme de link:https://www.etsi.org/deliver/etsi_ts/119100_119199/11910202/01.04.01_60/ts_11910202v010401p.pdf[ETSI TS 119 102-2 V1.4.1].
+* Horodatage : le link:https://www.rfc-editor.org/info/rfc3161[RFC 3161], d’une autorité dont la politique respecte link:https://www.etsi.org/deliver/etsi_en/319400_319499/319421/01.03.01_60/en_319421v010301p.pdf[ETSI EN 319 421 V1.3.1].
+* Journal de transparence : les spécifications C2SP au commit `b2dd989`.
+Ce sont link:https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-checkpoint.md[tlog-checkpoint v1.1.0], link:https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-cosignature.md[tlog-cosignature v1.1.0], link:https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-witness.md[tlog-witness v1.1.0], link:https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-tiles.md[tlog-tiles v1.0.0] et link:https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-mirror.md[tlog-mirror v0.1.0].
+* Preuves et politiques : link:https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-proof.md[tlog-proof] et link:https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-policy.md[tlog-policy], au même commit.
+Ces deux textes n’ont pas encore d’étiquette de version, et le commit fixe donc leur contenu.
+* Dossiers de preuves : le link:https://www.rfc-editor.org/info/rfc4998[RFC 4998] et le link:https://www.rfc-editor.org/info/rfc6283[RFC 6283].
+* Suites cryptographiques : link:https://www.etsi.org/deliver/etsi_ts/119300_119399/119312/02.01.01_60/ts_119312v020101p.pdf[ETSI TS 119 312 V2.1.1] et link:https://www.cyber.gc.ca/en/guidance/cryptographic-algorithms-unclassified-protected-protected-b-information-itsp40111[l’ITSP.40.111, version 5, du Centre canadien pour la cybersécurité].
 
 == Références
-
-Donnez ici chaque source externe que cite cette page, avec la même adresse que son lien dans le texte.
-Chaque entrée donne le titre, l'éditeur, la version, la date et une copie archivée.
 
 === Références normatives
 
 * link:https://www.rfc-editor.org/info/rfc2119[RFC 2119, Key words for use in RFCs to Indicate Requirement Levels], IETF, BCP 14, 1997-03. link:https://web.archive.org/web/20261103005705/https://www.rfc-editor.org/info/rfc2119/[Copie archivée]
 * link:https://www.rfc-editor.org/info/rfc8174[RFC 8174, Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words], IETF, BCP 14, 2017-05. link:https://web.archive.org/web/20261103005743/https://www.rfc-editor.org/info/rfc8174/[Copie archivée]
+* link:https://eur-lex.europa.eu/eli/reg_impl/2026/248/oj/eng[Commission Implementing Regulation (EU) 2026/248, reference standards for advanced electronic signature and seal formats], Union européenne, 2026-02-02. link:https://web.archive.org/web/20260919010505/https://eur-lex.europa.eu/eli/reg_impl/2026/248/oj/eng[Copie archivée]
+* link:https://www.etsi.org/deliver/etsi_en/319100_319199/31910201/01.04.01_60/en_31910201v010401p.pdf[ETSI EN 319 102-1, Procedures for Creation and Validation of AdES Digital Signatures, Part 1], ETSI, V1.4.1, 2024-06. link:https://web.archive.org/web/20260713203046/https://www.etsi.org/deliver/etsi_en/319100_319199/31910201/01.04.01_60/en_31910201v010401p.pdf[Copie archivée]
+* link:https://www.etsi.org/deliver/etsi_ts/119100_119199/11910202/01.04.01_60/ts_11910202v010401p.pdf[ETSI TS 119 102-2, Signature Validation Report], ETSI, V1.4.1, 2023-06. link:https://web.archive.org/web/20250119050746/https://www.etsi.org/deliver/etsi_ts/119100_119199/11910202/01.04.01_60/ts_11910202v010401p.pdf[Copie archivée]
+* link:https://www.rfc-editor.org/info/rfc3161[RFC 3161, Internet X.509 Public Key Infrastructure Time-Stamp Protocol (TSP)], IETF, Proposed Standard, 2001-08. link:https://web.archive.org/web/20261104025145/https://www.rfc-editor.org/info/rfc3161/[Copie archivée]
+* link:https://www.etsi.org/deliver/etsi_en/319400_319499/319421/01.03.01_60/en_319421v010301p.pdf[ETSI EN 319 421, Policy and Security Requirements for Trust Service Providers issuing Time-Stamps], ETSI, V1.3.1, 2025-07. link:https://web.archive.org/web/20260925181041/https://www.etsi.org/deliver/etsi_en/319400_319499/319421/01.03.01_60/en_319421v010301p.pdf[Copie archivée]
+* link:https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-checkpoint.md[Transparency Log Checkpoints], Community Cryptography Specification Project, v1.1.0, 2026-10-07.
+* link:https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-cosignature.md[Transparency Log Cosignatures], Community Cryptography Specification Project, v1.1.0, 2026-10-07.
+* link:https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-witness.md[Transparency Log Witness Protocol], Community Cryptography Specification Project, v1.1.0, 2026-10-07.
+* link:https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-tiles.md[Tiled Transparency Logs], Community Cryptography Specification Project, v1.0.0, 2026-10-07.
+* link:https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-mirror.md[Transparency Log Mirrors], Community Cryptography Specification Project, v0.1.0, 2026-10-07.
+* link:https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-proof.md[Transparency Log Proofs], Community Cryptography Specification Project, format `c2sp.org/tlog-proof@v1`, sans étiquette de version, commit du 2026-10-07.
+* link:https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-policy.md[Transparency log trust policy], Community Cryptography Specification Project, sans étiquette de version, commit du 2026-10-07.
+* link:https://www.rfc-editor.org/info/rfc4998[RFC 4998, Evidence Record Syntax (ERS)], IETF, Proposed Standard, 2007-08. link:https://web.archive.org/web/20260107003951/https://www.rfc-editor.org/rfc/rfc4998.html[Copie archivée]
+* link:https://www.rfc-editor.org/info/rfc6283[RFC 6283, Extensible Markup Language Evidence Record Syntax (XMLERS)], IETF, Proposed Standard, 2011-07. link:https://web.archive.org/web/20261020000808/https://www.rfc-editor.org/info/rfc6283/[Copie archivée]
+* link:https://www.etsi.org/deliver/etsi_ts/119300_119399/119312/02.01.01_60/ts_119312v020101p.pdf[ETSI TS 119 312, Cryptographic Suites], ETSI, V2.1.1, 2026-06. link:https://web.archive.org/web/20261023174853/https://www.etsi.org/deliver/etsi_ts/119300_119399/119312/[Copie archivée du dossier de l’ETSI qui énumère cette version]
+* link:https://www.cyber.gc.ca/en/guidance/cryptographic-algorithms-unclassified-protected-protected-b-information-itsp40111[Cryptographic algorithms for UNCLASSIFIED, PROTECTED A, and PROTECTED B information, ITSP.40.111], Centre canadien pour la cybersécurité, version 5, en vigueur le 2026-05-29. link:https://web.archive.org/web/20261020132957/https://www.cyber.gc.ca/en/guidance/cryptographic-algorithms-unclassified-protected-protected-b-information-itsp40111[Copie archivée]
 
 == Historique du document
-
-Ajoutez une ligne pour chaque version qui modifie cette page.
 
 [cols="1,1,4",options="header"]
 |===
 |Version |Date |Changement
-|0.1.0 |2026-11-03 |Première version.
+|0.1.0 |2026-11-11 |Première version.
 |===

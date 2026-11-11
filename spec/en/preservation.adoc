@@ -1,0 +1,99 @@
+= Long-term preservation
+include::_fpsot-terms.adoc[]
+
+Some records must stay verifiable for decades, such as laws, the titles of land and the records of civil status.
+Their seals will not last that long.
+Certificates expire, certificate authorities close, and algorithms weaken.
+Canada, the European Union and the United States plan to retire today's signature algorithms between 2030 and 2035.
+
+An {term-evidence-record} answers that problem with hashes and time stamps.
+It time-stamps the root of a Merkle tree over many records.
+Before an algorithm weakens, a preservation service adds a new time stamp or hash tree over the old proof.
+The record then keeps a chain of proofs that it existed unchanged at each step.
+One renewal covers millions of records.
+
+The seal proves origin at issuance, and the log proves publication.
+The evidence record proves that the record stays intact over the long term.
+No single algorithm failure breaks all three.
+These rules apply to the issuer and to the preservation service.
+
+== Evidence records
+
+[[LOG-070]]
+*LOG-070.* A preservation service MUST keep an evidence record for each record of the `seal-log-preserve` profile.
+The evidence record MUST follow link:https://www.rfc-editor.org/info/rfc4998[RFC 4998] or link:https://www.rfc-editor.org/info/rfc6283[RFC 6283].
+It MUST cover the logged bytes of LOG-031, the proof of LOG-050 and the validation data of the seal.
+The service MUST keep each evidence record beside the logged original, and not embed it in the record.
+An embedded evidence record would make a new file, which the leaf of the log does not match.
+The service MUST add each record to an evidence record before the time-stamp certificate of its seal expires.
+
+An evidence record does not depend on the seal key.
+It still protects the record after that key becomes unsafe.
+
+[[LOG-071]]
+*LOG-071.* The hash trees of each evidence record MUST use SHA-384, SHA-512, SHA3-384 or SHA3-512.
+The log keeps SHA-256 under OBS-111, and this rule does not change that.
+ETSI TS 119 312 V2.1.1 warns that SHA-256 may not suffice for archives kept beyond 20 years.
+The long-term strength therefore sits in the evidence record, not in the log.
+
+[[LOG-072]]
+*LOG-072.* A preservation service MUST renew each evidence record in these cases.
+
+* It adds a new time stamp before the algorithm, key size or certificate of the latest one stops being safe.
+* Before its hash algorithm stops being safe, it builds a new hash tree over the record and the old proof.
+* At each change of the cryptographic suite of the deployment, under LOG-092.
+
+The service MUST review its algorithms at least once a year, against ETSI TS 119 312 and ITSP.40.111.
+Each renewal MUST take its time stamp from an authority of LOG-020.
+Once an authority offers it, renewals SHOULD use a time stamp that SLH-DSA or a hybrid pair signs.
+SLH-DSA is the algorithm of link:https://csrc.nist.gov/pubs/fips/205/final[FIPS 205].
+ETSI TS 119 312 recommends a hybrid with SLH-DSA for time stamps.
+After such a renewal, a quantum computer can no longer forge the proof that the record existed before.
+
+[[LOG-073]]
+*LOG-073.* An issuer MUST state, for each series of the `seal-log-preserve` profile, a minimum verification lifetime.
+That lifetime MUST equal the retention period of the series.
+It MUST have no end for records that the issuer keeps permanently.
+The preservation service MUST keep, for that lifetime, all data that a verifier needs.
+That data includes the certificates and the revocation data of the seals and the time stamps.
+It also includes the trust-anchor sets, the log keys and each version of the witness policy.
+
+A proof that nobody can check after the data is gone proves nothing.
+
+[[LOG-074]]
+*LOG-074.* To preserve signatures, a preservation service SHOULD follow the model of link:https://www.etsi.org/deliver/etsi_ts/119500_119599/119511/01.01.01_60/ts_119511v010101p.pdf[ETSI TS 119 511 V1.1.1].
+An archive that holds the sealed records SHOULD pack them as link:https://www.iso.org/standard/87471.html[ISO 14721:2025] describes.
+
+The European Union applies these two references to its qualified preservation and archiving services.
+In Germany, the federal office for the security of information describes evidence records for public archives in its guideline link:https://www.bsi.bund.de/EN/Themen/Unternehmen-und-Organisationen/Standards-und-Zertifizierung/Technische-Richtlinien/TR-nach-Thema-sortiert/tr03125/BSITR03125.html[TR-03125].
+
+[[LOG-075]]
+*LOG-075.* A preservation service MUST keep an evidence record of each shard with entries of the `seal-log-preserve` profile.
+It MUST cover the final checkpoint, its cosignatures and its time stamp of LOG-023.
+It MUST also cover each version of the witness policy.
+The proof of publication then outlives the Ed25519 keys of the log and of the witnesses.
+
+== References
+
+=== Normative
+
+* link:https://www.rfc-editor.org/info/rfc4998[RFC 4998, Evidence Record Syntax (ERS)], IETF, Proposed Standard, 2007-08. link:https://web.archive.org/web/20260107003951/https://www.rfc-editor.org/rfc/rfc4998.html[Archived copy]
+* link:https://www.rfc-editor.org/info/rfc6283[RFC 6283, Extensible Markup Language Evidence Record Syntax (XMLERS)], IETF, Proposed Standard, 2011-07. link:https://web.archive.org/web/20261020000808/https://www.rfc-editor.org/info/rfc6283/[Archived copy]
+* link:https://csrc.nist.gov/pubs/fips/205/final[FIPS 205, Stateless Hash-Based Digital Signature Standard], NIST, 2024-08-13. link:https://web.archive.org/web/20261104094908/https://csrc.nist.gov/pubs/fips/205/final[Archived copy]
+
+=== Informative
+
+* link:https://www.etsi.org/deliver/etsi_ts/119500_119599/119511/01.01.01_60/ts_119511v010101p.pdf[ETSI TS 119 511, Policy and security requirements for trust service providers providing long-term preservation of digital signatures or general data using digital signature techniques], ETSI, V1.1.1, 2019-06. link:https://web.archive.org/web/20260526133503/https://www.etsi.org/deliver/etsi_ts/119500_119599/119511/01.01.01_60/ts_119511v010101p.pdf[Archived copy]
+* link:https://www.iso.org/standard/87471.html[ISO 14721:2025, Space data system practices, Reference model for an open archival information system (OAIS)], ISO, 2025. link:https://web.archive.org/web/20260925064602/https://www.iso.org/standard/87471.html[Archived copy]
+* link:https://www.etsi.org/deliver/etsi_ts/119300_119399/119312/02.01.01_60/ts_119312v020101p.pdf[ETSI TS 119 312, Cryptographic Suites], ETSI, V2.1.1, 2026-06. link:https://web.archive.org/web/20261023174853/https://www.etsi.org/deliver/etsi_ts/119300_119399/119312/[Archived copy of the ETSI folder that lists this version]
+* link:https://www.cyber.gc.ca/en/guidance/cryptographic-algorithms-unclassified-protected-protected-b-information-itsp40111[Cryptographic algorithms for UNCLASSIFIED, PROTECTED A, and PROTECTED B information, ITSP.40.111], Canadian Centre for Cyber Security, version 5, effective 2026-05-29. link:https://web.archive.org/web/20261020132957/https://www.cyber.gc.ca/en/guidance/cryptographic-algorithms-unclassified-protected-protected-b-information-itsp40111[Archived copy]
+* link:https://eur-lex.europa.eu/eli/reg_impl/2025/2532/oj[Commission Implementing Regulation (EU) 2025/2532, reference standards for qualified electronic archiving services], European Union, 2025-12-16. link:https://web.archive.org/web/20260703054020/https://eur-lex.europa.eu/eli/reg_impl/2025/2532/oj[Archived copy]
+* link:https://www.bsi.bund.de/EN/Themen/Unternehmen-und-Organisationen/Standards-und-Zertifizierung/Technische-Richtlinien/TR-nach-Thema-sortiert/tr03125/BSITR03125.html[BSI TR-03125, Preservation of Evidence of Cryptographically Signed Documents (TR-ESOR)], Federal Office for Information Security of Germany, version 1.3. link:https://web.archive.org/web/20240316131039/https://www.bsi.bund.de/EN/Themen/Unternehmen-und-Organisationen/Standards-und-Zertifizierung/Technische-Richtlinien/TR-nach-Thema-sortiert/tr03125/BSITR03125.html[Archived copy]
+
+== Document history
+
+[cols="1,1,4",options="header"]
+|===
+|Version |Date |Change
+|0.1.0 |2026-11-11 |First version.
+|===

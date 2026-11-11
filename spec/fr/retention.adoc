@@ -1,0 +1,98 @@
+= Conservation, caviardage et transfert
+include::_fpsot-terms.adoc[]
+
+Un document cacheté suit le même calendrier de conservation que tout autre document de son émetteur.
+Cette spécification n’ajoute aucune obligation de conserver un document plus longtemps.
+Le journal, lui, doit garder chaque feuille, sinon les preuves des autres documents se briseraient.
+Le condensé salé de LOG-031 résout cette tension.
+Quand l’émetteur détruit un document et son sel, la feuille qui reste ne révèle rien.
+Chaque autre preuve tient toujours.
+
+Ces règles reprennent les règles de conservation de la spécification sur l’observabilité, et n’en changent aucune.
+Elles visent l’émetteur, l’exploitant du journal et le service de préservation.
+
+== Conservation et destruction
+
+[[LOG-080]]
+*LOG-080.* Un émetteur DOIT respecter OBS-100, OBS-102, OBS-103 et OBS-104 pour ses documents cachetés.
+Il applique OBS-116 avec ses propres niveaux d’exigence.
+Ces règles couvrent aussi les sels, les manifestes de cachet et les inscriptions au registre de LOG-060.
+Dans ces règles, un document cacheté prend la place d’un enregistrement de journal.
+
+Chaque règle de conservation nomme alors la règle du calendrier qu’elle applique.
+Une {term-legal-hold} suspend la destruction, et chaque destruction laisse un événement d’audit qui nomme le dernier point de contrôle.
+Le profil de conservation d’OBS-101 ne s’applique pas.
+Seul le calendrier de l’émetteur fixe la durée de vie d’un document cacheté.
+
+[[LOG-081]]
+*LOG-081.* Pour détruire un document, un émetteur DOIT détruire ensemble le document cacheté et son sel, dans chaque copie.
+Il NE DOIT PAS retirer ni modifier l’entrée du document dans le journal.
+L’événement de destruction d’OBS-104 DOIT donner la tranche et l’index de l’entrée.
+Sans le sel, personne ne peut tester une supposition sur la feuille.
+La feuille qui reste ne dit alors rien du document.
+L’arbre garde sa feuille, et les preuves de chaque autre document restent valides.
+
+[[LOG-082]]
+*LOG-082.* Un émetteur NE DOIT PAS modifier un document cacheté.
+Pour corriger un document, il DOIT apposer un cachet sur un nouveau document et l’inscrire au journal.
+Le champ `replaces` du nouveau manifeste DOIT nommer l’ancien document.
+Pour retirer un document, il DOIT créer l’événement `org.fpsot.log.record.withdrawn`, puis conserver ou détruire le document selon son calendrier.
+Pour caviarder un document, il DOIT le retirer et cacheter une copie caviardée, sans jamais retirer de feuille.
+Les lecteurs voient alors tout l’historique, et le journal reste en ajout seul.
+
+== Transfert
+
+[[LOG-083]]
+*LOG-083.* Un émetteur DOIT tenir une trace de transfert quand il fait passer un document cacheté à un nouveau format.
+Il DOIT faire de même quand il appose de nouveau un cachet sur un document, et la trace suit OBS-105.
+Elle DOIT donner l’`id` et l’entrée du journal de l’ancien document.
+Elle DOIT aussi donner l’`id` et le cachet du nouveau document, la méthode et la date.
+Pour les profils `seal-log`, le nouveau document DOIT avoir sa propre entrée au journal.
+L’émetteur DOIT conserver l’ancien document cacheté aussi longtemps que sa règle de conservation l’exige, selon OBS-102.
+
+Un changement de format brise un cachet.
+La trace de transfert porte alors la chaîne de preuve de l’ancien document au nouveau.
+
+Une loi du Québec demande de documenter le transfert d’un document vers un autre support.
+Cette loi établit le cadre juridique des technologies de l’information.
+Une link:https://www.barreaudemontreal.qc.ca/wp-content/uploads/2017-guideti-documenttechnologique_fev2017.pdf[source secondaire] lit son article 17 comme exigeant trois éléments, _à vérifier_.
+Ce sont le format d’origine, le procédé de transfert et les garanties d’intégrité.
+
+== Tranches du journal
+
+[[LOG-084]]
+*LOG-084.* Un émetteur DOIT traiter chaque tranche fermée comme une série documentaire, selon OBS-102.
+La série DOIT avoir sa propre règle au calendrier de conservation.
+L’émetteur DOIT conserver en permanence chaque tranche qui contient une entrée d’un document permanent.
+Il DOIT aussi conserver la copie miroir et les dossiers de preuves de cette tranche.
+Il PEUT détruire une tranche entière quand tous ses documents ont atteint leur fin.
+Cette destruction exige qu’aucune {term-legal-hold} ne vise la tranche.
+
+Les tranches annuelles rendent cette gestion praticable, car chacune a un contenu clair et une fin claire.
+Une tranche du journal est-elle un document que doit couvrir un calendrier de conservation?
+C’est une question pour le conseiller juridique.
+
+[[LOG-085]]
+*LOG-085.* Un journal, ses points de contrôle et ses politiques NE DOIVENT PAS contenir de renseignements personnels.
+Les preuves que publie un émetteur NE DOIVENT PAS en contenir non plus.
+Le condensé salé de LOG-031 DOIT être la seule donnée sur un document dans le journal.
+Un émetteur NE DOIT PAS inscrire au journal un condensé non salé d’un document ou d’un identifiant.
+Un numéro d’assurance sociale est un tel identifiant.
+L’{term-privacy-impact-assessment} du système DEVRAIT couvrir le journal.
+
+Quiconque peut retrouver une valeur courte à partir de son condensé non salé, en essayant chaque candidat.
+Savoir si la feuille salée d’un document détruit reste un renseignement personnel est une question pour le conseiller juridique.
+
+== Références
+
+=== Références informatives
+
+* link:https://www.barreaudemontreal.qc.ca/wp-content/uploads/2017-guideti-documenttechnologique_fev2017.pdf[Guide TI, Le document technologique et son intégrité], Barreau de Montréal, 2017-02. link:https://web.archive.org/web/20260412025811/https://www.barreaudemontreal.qc.ca/wp-content/uploads/2017-guideti-documenttechnologique_fev2017.pdf[Copie archivée]
+
+== Historique du document
+
+[cols="1,1,4",options="header"]
+|===
+|Version |Date |Changement
+|0.1.0 |2026-11-11 |Première version.
+|===

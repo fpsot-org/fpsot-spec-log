@@ -1,0 +1,95 @@
+= Retention, redaction and transfer
+include::_fpsot-terms.adoc[]
+
+A sealed record follows the same retention schedule as any other record of its issuer.
+This specification adds no duty to keep a record longer.
+The log, though, must keep every leaf, or the proofs of the other records would break.
+The salted hash of LOG-031 resolves this tension.
+When the issuer destroys a record and its salt, the leaf that remains reveals nothing.
+Every other proof still holds.
+
+These rules reuse the retention rules of the observability specification, and change none of them.
+They apply to the issuer, to the log operator and to the preservation service.
+
+== Retention and destruction
+
+[[LOG-080]]
+*LOG-080.* An issuer MUST meet OBS-100, OBS-102, OBS-103 and OBS-104 for its sealed records.
+It applies OBS-116 with its own requirement levels.
+These rules also cover the salts, the seal manifests and the entries of the register of LOG-060.
+In those rules, a sealed record takes the place of a log record.
+
+Each retention rule then names the rule of the schedule that it applies.
+A {term-legal-hold} stops destruction, and each destruction leaves an audit event that names the latest checkpoint.
+The retention profile of OBS-101 does not apply.
+Only the schedule of the issuer sets how long a sealed record stays.
+
+[[LOG-081]]
+*LOG-081.* To destroy a record, an issuer MUST destroy the sealed record and its salt together, in every copy.
+It MUST NOT remove or change the log entry of the record.
+The destruction event of OBS-104 MUST give the shard and the index of the entry.
+Without the salt, nobody can test a guess against the leaf.
+The leaf that remains then says nothing about the record.
+The tree keeps its leaf, and the proofs of every other record stay valid.
+
+[[LOG-082]]
+*LOG-082.* An issuer MUST NOT change a sealed record.
+To correct a record, it MUST seal and log a new record.
+The `replaces` field of the new manifest MUST name the old record.
+To withdraw a record, it MUST create the event `org.fpsot.log.record.withdrawn`, and then keep or destroy the record under its schedule.
+To redact a record, it MUST withdraw it and seal a redacted copy, never remove a leaf.
+Readers then see the whole history, and the log stays append-only.
+
+== Transfer
+
+[[LOG-083]]
+*LOG-083.* An issuer MUST keep a transfer record when it moves a sealed record to a new format.
+It MUST do the same when it seals a record again, and the transfer record follows OBS-105.
+It MUST give the `id` and the log entry of the old record.
+It MUST also give the `id` and the seal of the new record, the method and the date.
+The new record MUST get its own log entry, for the `seal-log` profiles.
+The issuer MUST keep the old sealed record for as long as its retention rule asks, under OBS-102.
+
+A change of format breaks a seal.
+The transfer record then carries the chain of proof from the old record to the new one.
+
+A Québec act asks to document the transfer of a document to another medium.
+That act sets the legal framework for information technology.
+A link:https://www.barreaudemontreal.qc.ca/wp-content/uploads/2017-guideti-documenttechnologique_fev2017.pdf[secondary source] reads its article 17 as asking for three facts, _to be verified_.
+They are the original format, the method and the guarantees of integrity.
+
+== Log shards
+
+[[LOG-084]]
+*LOG-084.* An issuer MUST treat each closed shard as a records series, under OBS-102.
+The series MUST have its own rule in the retention schedule.
+The issuer MUST keep permanently each shard with an entry of a permanent record.
+It MUST also keep that shard's mirror copy and its evidence records.
+It MAY destroy a whole shard once every record in it has reached its end, and no legal hold applies.
+
+Yearly shards make this tractable, since each shard has a clear content and a clear end.
+Whether a log shard is a document that a retention schedule must cover is a question for counsel.
+
+[[LOG-085]]
+*LOG-085.* A log, its checkpoints, its policies and the proofs that an issuer publishes MUST NOT hold personal information.
+The salted hash of LOG-031 MUST be the only data about a record in the log.
+An issuer MUST NOT log an unsalted hash of a record or of an identifier.
+A social insurance number is such an identifier.
+The {term-privacy-impact-assessment} of the system SHOULD cover the log.
+
+Anyone can recover a short value from its unsalted hash, by trying every candidate.
+Whether a salted leaf of a destroyed record is still personal information is a question for counsel.
+
+== References
+
+=== Informative
+
+* link:https://www.barreaudemontreal.qc.ca/wp-content/uploads/2017-guideti-documenttechnologique_fev2017.pdf[Guide TI, Le document technologique et son intégrité], Barreau de Montréal, 2017-02. link:https://web.archive.org/web/20260412025811/https://www.barreaudemontreal.qc.ca/wp-content/uploads/2017-guideti-documenttechnologique_fev2017.pdf[Archived copy]
+
+== Document history
+
+[cols="1,1,4",options="header"]
+|===
+|Version |Date |Change
+|0.1.0 |2026-11-11 |First version.
+|===

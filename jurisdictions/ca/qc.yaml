@@ -1,0 +1,28 @@
+code: CA-QC
+name: {en: Québec, fr: Québec}
+rows:
+  - id: LOG-018
+    text: {en: "The government public key infrastructure issues signature certificates at three levels, base, moyen and élevé, each with its own policy identifier. Whether the 2014 directive still applies today is to be verified.", fr: "L’infrastructure à clés publiques gouvernementale délivre des certificats de signature à trois niveaux, base, moyen et élevé, chacun avec son propre identifiant de politique. Reste à vérifier si la directive de 2014 s’applique toujours."}
+    status: looser
+    source: {title: "Gouvernement du Québec, Conseil du trésor, Directive sur les services de certification offerts par le gouvernement du Québec, décret 6-2014", date: "2014-01-15", url: "https://cdn-contenu.quebec.ca/cdn-contenu/adm/min/cybersecurite_numerique/Publications/Securite_information/Directive_services_certification.pdf", archive: "https://web.archive.org/web/20250915010310/https://cdn-contenu.quebec.ca/cdn-contenu/adm/min/cybersecurite_numerique/Publications/Securite_information/Directive_services_certification.pdf"}
+    last_checked: "2026-11-10"
+  - id: LOG-031
+    text: {en: "The act on the legal framework for information technology ties the legal value of a document to its integrity over its whole life cycle, destruction included. It prescribes no technology. The article numbers come from a secondary source and are to be verified.", fr: "La loi concernant le cadre juridique des technologies de l’information lie la valeur juridique d’un document à son intégrité pendant tout son cycle de vie, destruction comprise. Elle ne prescrit aucune technologie. Les numéros d’articles viennent d’une source secondaire et sont à vérifier."}
+    status: looser
+    source: {title: "Barreau de Montréal, Guide TI, Le document technologique et son intégrité (secondary source on the act, chapter C-1.1)", date: "2017-02", url: "https://www.barreaudemontreal.qc.ca/wp-content/uploads/2017-guideti-documenttechnologique_fev2017.pdf", archive: "https://web.archive.org/web/20260412025811/https://www.barreaudemontreal.qc.ca/wp-content/uploads/2017-guideti-documenttechnologique_fev2017.pdf"}
+    last_checked: "2026-11-10"
+  - id: LOG-041
+    text: {en: "The secondary source describes no Québec rule on transparency logs or witnesses. It reads the act as technology-neutral: any process that links a person to a document and keeps it intact can serve.", fr: "La source secondaire ne décrit aucune règle québécoise sur les journaux de transparence ni sur les témoins. Elle lit la loi comme neutre sur le plan technologique : tout procédé qui lie une personne à un document et en garde l’intégrité peut servir."}
+    status: not-covered
+    source: {title: "Barreau de Montréal, Guide TI, Le document technologique et son intégrité (secondary source on the act, chapter C-1.1)", date: "2017-02", url: "https://www.barreaudemontreal.qc.ca/wp-content/uploads/2017-guideti-documenttechnologique_fev2017.pdf", archive: "https://web.archive.org/web/20260412025811/https://www.barreaudemontreal.qc.ca/wp-content/uploads/2017-guideti-documenttechnologique_fev2017.pdf"}
+    last_checked: "2026-11-10"
+  - id: LOG-083
+    text: {en: "A transfer of a document to another medium must be documented, with at least the original format, the method of transfer and the integrity guarantees it offers. The secondary source places this in article 17, to be verified.", fr: "Le transfert d’un document vers un autre support doit être documenté, avec au moins le format d’origine, le procédé de transfert et les garanties d’intégrité qu’il offre. La source secondaire situe cette règle à l’article 17, à vérifier."}
+    status: same
+    source: {title: "Barreau de Montréal, Guide TI, Le document technologique et son intégrité (secondary source on the act, chapter C-1.1)", date: "2017-02", url: "https://www.barreaudemontreal.qc.ca/wp-content/uploads/2017-guideti-documenttechnologique_fev2017.pdf", archive: "https://web.archive.org/web/20260412025811/https://www.barreaudemontreal.qc.ca/wp-content/uploads/2017-guideti-documenttechnologique_fev2017.pdf"}
+    last_checked: "2026-11-10"
+  - id: LOG-084
+    text: {en: "Each public body keeps a retention schedule that Bibliothèque et Archives nationales du Québec approves, and destroys documents only under that schedule. The guidance does not mention integrity logs.", fr: "Chaque organisme public tient un calendrier de conservation qu’approuve Bibliothèque et Archives nationales du Québec, et ne détruit des documents que selon ce calendrier. Le guide ne mentionne pas les journaux d’intégrité."}
+    status: not-covered
+    source: {title: "Bibliothèque et Archives nationales du Québec, Élaboration d’un calendrier de conservation", date: "2025-03-11", url: "https://www.banq.qc.ca/sites/default/files/2025-03/Elaboration_CC_OH_2025-03-11_VF.pdf", archive: "https://web.archive.org/web/20251209135545/https://www.banq.qc.ca/sites/default/files/2025-03/Elaboration_CC_OH_2025-03-11_VF.pdf"}
+    last_checked: "2026-11-10"

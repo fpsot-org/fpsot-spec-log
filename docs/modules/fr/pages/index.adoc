@@ -1,15 +1,84 @@
-= Guide
-:page-type: explanation
+= Cacheter et publier une série de documents
+:page-type: how-to
 include::_fpsot-terms.adoc[]
 
-Cette page explique la spécification aux personnes qui l’adoptent.
-Chaque page de guide a un seul type.
-C’est un tutoriel, un guide pratique, une référence ou une explication.
+Ce guide mène un organisme public d’une série de documents sortants à des documents qui respectent le profil `seal-log`.
+Chaque étape cite la règle qu’elle respecte.
+Il ne constitue pas un avis juridique.
+La page des questions pour le conseiller juridique énumère les points qu’une ou un juriste doit trancher.
+
+== Avant d’apposer le cachet
+
+Choisissez le profil de la série, selon LOG-002.
+Une gazette, un extrait de registre ou une décision publiée prend au moins `seal-log`.
+Une série que vous conservez en permanence prend `seal-log-preserve`.
+C’est aussi le cas d’une série dont les documents doivent rester vérifiables après le 31 décembre 2030.
+Cette date vaut pour les algorithmes de cachet actuels.
+Inscrivez le profil dans l’inventaire du déploiement.
+
+Trouvez la règle de votre calendrier de conservation qui couvre la série, selon OBS-102.
+Demandez à vos archives si chaque tranche annuelle du journal exige sa propre règle, selon LOG-084.
+
+== Préparer le cachet
+
+Demandez à une autorité de certification un certificat de cachet d’organisation qui nomme votre organisme, selon LOG-014.
+Produisez sa clé dans un module matériel de sécurité, en présence de deux personnes, selon LOG-016 et LOG-062.
+Choisissez ECDSA sur P-384 avec SHA-384, selon LOG-015.
+
+Publiez vos ensembles d’ancres de confiance à une adresse stable, selon LOG-017.
+Inscrivez-y les racines de votre certificat de cachet et de votre autorité d’horodatage, selon LOG-021.
+
+== Apposer le cachet sur chaque document
+
+Choisissez le format selon le type de média du document, selon LOG-011.
+Un fichier {abbr-pdf-first} prend PAdES, un fichier {abbr-json-first} prend JAdES et un fichier {abbr-xml-first} prend XAdES.
+Apposez le cachet au niveau B-LT, avec l’horodatage d’une autorité conforme à LOG-020.
+Rédigez un manifeste de cachet à côté du document, selon LOG-019.
+Le fichier `examples/seal-manifest.json` en montre un.
+
+== Inscrire chaque document au journal
+
+Tirez un sel aléatoire de 32 octets pour le document, et gardez-le avec le document, selon LOG-031.
+Ajoutez au journal de l’année le SHA-256 du sel suivi des octets cachetés, selon LOG-031 et LOG-035.
+Gardez les octets cachetés tels que vous les avez inscrits, et remettez ces octets.
+N’ajoutez jamais le document lui-même, ni un condensé sans sel.
+
+Publiez la politique de témoins de la tranche avant la première entrée, selon LOG-040.
+Elle nomme au moins deux témoins publics, trois si possible, et au moins un témoin national, selon LOG-041.
+Le fichier `examples/records-log.tlog-policy` en montre une.
+Demandez à des archives d’être le miroir du journal, selon LOG-037.
+
+== Remettre la preuve
+
+Attendez que les témoins du quorum cosignent un point de contrôle qui couvre le document, selon LOG-046.
+Remettez ensuite la preuve à côté du document, avec le sel dans sa ligne `extra`, selon LOG-050 et LOG-051.
+Pour un document non public, remettez la preuve seulement aux personnes qui peuvent recevoir le document, selon LOG-052.
+Le fichier `examples/sealed-record.tlog-proof` montre une preuve.
+
+== Vérifier le résultat
+
+Lancez la vérification des exemples sur vos propres fichiers, avec les quatre noms de fichiers du dossier `examples/`.
+
+[source,text]
+----
+python3 examples/check-examples.py path/to/your/files
+----
+
+Une réussite montre que les signatures, le quorum, la feuille, la preuve d’inclusion et le manifeste concordent.
+La vérification ne compte que les cosignatures Ed25519 pour le quorum.
+Elle ne compte pas les cosignatures ML-DSA-44, que recommande LOG-043, et une politique de témoins ML-DSA-44 y échoue donc.
+Elle ne vérifie pas le cachet, qui exige un validateur selon LOG-054.
+Un outil de conformité suivra, selon LOG-005.
+
+== Surveiller le journal
+
+Faites fonctionner une vigie qui compare chaque entrée du journal avec votre registre, selon LOG-060 et LOG-061.
+Rédigez le plan d’incident de LOG-063, et mettez-le à l’essai chaque année.
 
 == Historique du document
 
 [cols="1,1,4",options="header"]
 |===
 |Version |Date |Changement
-|0.1.0 |2026-11-03 |Première version.
+|0.1.0 |2026-11-11 |Première version.
 |===

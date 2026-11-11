@@ -1,0 +1,93 @@
+= Reference stack
+include::_fpsot-terms.adoc[]
+
+This page is informative.
+It sets no rule, and no rule of this specification requires a product named here.
+It names the open-source products that {abbr-fpsot-first} uses to build and test its own reference implementation.
+Any product that meets the rules can take their place.
+
+== Products and versions
+
+The reference library for seals is the link:https://github.com/esig/dss/blob/98ab6c136fc90bfca78352b4e673e2eae72b7d5a/README.md[Digital Signature Service of the European Commission, version 6.5.1].
+Its release came on 14 October 2026.
+It is a Java library under the GNU Lesser General Public License 2.1, in the group `eu.europa.ec.joinup.sd-dss`.
+Its bill of materials is `dss-bom`.
+
+It creates and validates the four formats of LOG-010 and their ASiC containers.
+It also reads the trusted lists of the European Union, and it creates and validates the evidence records of LOG-070.
+Since version 6.3, it can embed an evidence record into a signature or an ASiC container.
+Its release notes up to 6.5.1 mention no post-quantum algorithm.
+
+The reference service runs this library on Quarkus 3.40, a long-term support stream, in JVM mode.
+The link:https://ec.europa.eu/digital-building-blocks/DSS/webapp-demo/doc/dss-documentation.html[documentation of the library] does not mention a native executable.
+The library relies on reflection, XML binding and service loaders, which a native build would need to declare.
+Linking the library into a native executable also raises a license question, which the page xref:questions-for-counsel.adoc[Questions for counsel] lists.
+
+The reference log is link:https://github.com/transparency-dev/tessera/blob/6bca8e8d5e23c9941f2b8a08f512b373f7131730/README.md[Tessera v1.0.4], a Go library under the Apache License 2.0.
+It serves the interface of LOG-036.
+The transparency log of the Sigstore project, link:https://blog.sigstore.dev/rekor-v2-ga/[Rekor version 2], runs on Tessera and uses yearly shards.
+The log is a separate service, so the language of its code does not reach the services that call it.
+
+The reference witness is link:https://github.com/transparency-dev/witness/blob/3dd65b08474a6e65af4a7f125ae5756a65f3a6de/README.md[OmniWitness], under the Apache License 2.0.
+It follows the witness protocol of LOG-044.
+
+== The verifier library
+
+The research of {abbr-fpsot} found no Java library that verifies C2SP checkpoints, cosignatures and proofs.
+The Java client of Sigstore covers the Sigstore ecosystem only.
+Its release 2.0.0 also dropped a check of time, and release 2.1.0 restored it.
+
+For this reason, {abbr-fpsot} plans a small Java library under the Apache License 2.0.
+It will parse signed notes, verify Ed25519 and ML-DSA-44 signatures, and check inclusion and consistency proofs.
+It will also read proofs and evaluate policies, so that it serves LOG-054 and the checks of OBS-115.
+The script `examples/check-examples.py` shows the same logic in a few hundred lines of Python.
+
+== How the parts fit
+
+[source,plantuml]
+----
+@startuml
+actor "Staff member" as Staff
+actor "Citizen or court" as Reader
+node "Sealing service\n(Quarkus, JVM mode, DSS)" as Seal
+node "Time-stamp authority" as TSA
+node "Transparency log\n(Tessera)" as Log
+node "Witnesses\n(public and domestic)" as Wit
+node "Mirror\n(an archives)" as Mirror
+node "Monitor" as Mon
+node "Verifier\n(FPSOT library)" as Ver
+Staff --> Seal : request, second approval
+Seal --> TSA : RFC 3161 request
+Seal --> Log : salted hash of the sealed bytes
+Log --> Wit : new checkpoint and consistency proof
+Wit --> Log : cosignature
+Log --> Mirror : tiles and checkpoints
+Mon --> Log : reads every entry
+Seal --> Reader : sealed record and its proof
+Reader --> Ver : record, proof, policy
+@enduml
+----
+
+The diagram shows a staff member who asks for a seal, and a second person who approves it.
+The sealing service seals the record, takes a time stamp and adds the salted hash to the log.
+Witnesses cosign each checkpoint, and a mirror keeps a copy.
+The monitor reads every entry and compares it with the register of the issuer.
+The reader gets the record and its proof, and checks both offline with the verifier.
+
+== References
+
+=== Informative
+
+* link:https://github.com/esig/dss/blob/98ab6c136fc90bfca78352b4e673e2eae72b7d5a/README.md[DSS, Digital Signature Service, README at the tag 6.5.1], European Commission, 2026-10-14. Pinned to a commit.
+* link:https://ec.europa.eu/digital-building-blocks/DSS/webapp-demo/doc/dss-documentation.html[DSS documentation], European Commission. link:https://web.archive.org/web/20261006235711/https://ec.europa.eu/digital-building-blocks/DSS/webapp-demo/doc/dss-documentation.html[Archived copy]
+* link:https://github.com/transparency-dev/tessera/blob/6bca8e8d5e23c9941f2b8a08f512b373f7131730/README.md[Tessera README, at the tag v1.0.4], transparency-dev project, 2026-07-16. Pinned to a commit.
+* link:https://blog.sigstore.dev/rekor-v2-ga/[Rekor v2 GA], Sigstore project, 2025-10-10. link:https://web.archive.org/web/20261103121316/https://blog.sigstore.dev/rekor-v2-ga/[Archived copy]
+* link:https://github.com/transparency-dev/witness/blob/3dd65b08474a6e65af4a7f125ae5756a65f3a6de/README.md[OmniWitness README], transparency-dev project, 2026-11-09. Pinned to a commit.
+
+== Document history
+
+[cols="1,1,4",options="header"]
+|===
+|Version |Date |Change
+|0.1.0 |2026-11-11 |First version.
+|===

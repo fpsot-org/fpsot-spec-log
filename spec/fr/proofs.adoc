@@ -1,0 +1,113 @@
+= Preuves et vérification
+include::_fpsot-terms.adoc[]
+
+Une citoyenne, un tribunal ou un autre gouvernement reçoit un document cacheté et veut savoir trois choses.
+Qui l’a émis, si quelqu’un l’a modifié, et si l’émetteur l’a publié à tous sous la même forme.
+Ces règles fixent la preuve qui accompagne chaque document, et la façon dont tout vérificateur la contrôle.
+Elles visent l’émetteur et chaque vérificateur.
+
+La preuve fonctionne hors ligne, comme une signature détachée.
+Elle contient la {term-inclusion-proof} du document et un point de contrôle avec ses cosignatures.
+Un vérificateur qui a la politique et les ancres de confiance publiées n’a besoin de rien d’autre de l’émetteur.
+
+== La preuve d’un document
+
+[[LOG-050]]
+*LOG-050.* Un émetteur DOIT remettre une preuve avec chaque document des profils `seal-log`.
+La preuve DOIT suivre le format `c2sp.org/tlog-proof@v1` de link:https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-proof.md[C2SP tlog-proof].
+Son point de contrôle DOIT porter les cosignatures qu’exige le quorum de LOG-041.
+L’émetteur DOIT la remettre à côté du document, ou dans un lot extérieur qui n’est pas inscrit au journal.
+Une preuve à côté du document est un fichier qui porte l’extension `.tlog-proof`.
+Le fichier `examples/sealed-record.tlog-proof` montre une preuve.
+
+La preuve vient après l’inscription, et ne peut donc pas se trouver dans les octets inscrits de LOG-031.
+
+[[LOG-051]]
+*LOG-051.* Le sel de LOG-031 DOIT parvenir au détenteur du document, pour qu’un vérificateur puisse reconstruire l’entrée.
+L’émetteur DOIT le placer dans la ligne `extra` de la preuve, ou dans le lot extérieur de LOG-050.
+Dans la ligne `extra`, il DOIT s’agir du sel brut, en base64 canonique selon le link:https://www.rfc-editor.org/info/rfc4648[RFC 4648].
+Un vérificateur DOIT calculer l’entrée comme le SHA-256 du sel, suivi des octets cachetés.
+Il calcule ensuite le condensé de feuille et vérifie la preuve d’inclusion jusqu’à la racine du point de contrôle.
+La ligne `extra` n’a pas de signature, sans danger, car un mauvais sel ne reconstruit pas la feuille.
+
+[[LOG-052]]
+*LOG-052.* Un émetteur DOIT remettre une preuve qui contient le sel seulement aux parties qui peuvent recevoir le document.
+Pour un document non public, il NE DOIT PAS publier une telle preuve.
+Il PEUT publier, avec son sel, la preuve d’un document public, comme une gazette ou une décision publiée.
+Avec le sel, quiconque devine le contenu d’un document pourrait vérifier sa supposition dans le journal.
+
+== Vérification
+
+[[LOG-053]]
+*LOG-053.* Un vérificateur DOIT pouvoir contrôler un document à partir du seul matériel publié.
+Ce matériel est le document cacheté, sa preuve et la politique.
+Il comprend aussi les ensembles d’ancres de confiance et les jetons d’horodatage des points de contrôle.
+Le contrôle NE DOIT PAS exiger d’appel à l’émetteur.
+Un émetteur DOIT offrir au moins un vérificateur sous licence libre, que quiconque peut exécuter sur son propre appareil.
+Un contrôle qui dépend du serveur de l’émetteur prouve seulement ce que ce serveur affirme aujourd’hui.
+
+[[LOG-054]]
+*LOG-054.* Un vérificateur DOIT faire chacun de ces contrôles et en signaler chaque résultat à part.
+
+1. Le cachet, selon link:https://www.etsi.org/deliver/etsi_en/319100_319199/31910201/01.04.01_60/en_31910201v010401p.pdf[ETSI EN 319 102-1 V1.4.1], par un ensemble d’ancres de confiance de l’émetteur.
+2. L’horodatage du cachet, selon LOG-020.
+3. Pour les profils `seal-log`, la signature de journal du point de contrôle, selon la clé de la politique.
+4. Pour les mêmes profils, les cosignatures du point de contrôle et le quorum de la politique, selon LOG-045.
+5. Pour les mêmes profils, la feuille et la preuve d’inclusion, selon LOG-051.
+6. Pour les documents munis d’un {term-evidence-record}, ce dossier, selon LOG-070.
+
+Un vérificateur DOIT rejeter le base64 non canonique, comme l’exigent les formats C2SP.
+Il DOIT présenter le résultat du cachet dans la forme de link:https://www.etsi.org/deliver/etsi_ts/119100_119199/11910202/01.04.01_60/ts_11910202v010401p.pdf[ETSI TS 119 102-2 V1.4.1].
+Il DOIT nommer l’ensemble d’ancres de confiance et le niveau d’assurance de LOG-018.
+Un lecteur voit alors quelle preuve tient et laquelle échoue, au lieu d’un seul oui ou non.
+
+[[LOG-055]]
+*LOG-055.* Un émetteur et un vérificateur NE DOIVENT PAS présenter comme preuve une image de cachet ou un logo.
+Ils NE DOIVENT PAS non plus présenter ainsi une marque imprimée.
+Un émetteur PEUT afficher une image de cachet sur un document.
+Sa page de vérification DOIT alors préciser que seuls les contrôles de LOG-054 prouvent le document.
+Une copie imprimée vers un nouveau fichier {abbr-pdf-first} garde l’image et perd le cachet.
+Le link:https://www.govinfo.gov/about/authentication[service GovInfo] des États-Unis met ses lecteurs en garde contre ce cas.
+
+[[LOG-056]]
+*LOG-056.* Un émetteur DEVRAIT imprimer un court code de consultation et un code QR sur chaque document cacheté imprimé.
+Le code DEVRAIT mener à une adresse qui sert l’original cacheté et sa preuve.
+La page de vérification à cette adresse DOIT faire les contrôles de LOG-054, et en afficher chaque résultat.
+Le code NE DOIT PAS contenir de renseignement personnel.
+Pour un document non public, le code DOIT contenir au moins 128 bits aléatoires.
+Personne ne peut alors deviner le code d’un autre document.
+
+Une version imprimée ne peut pas porter de cachet, et le code ramène donc le lecteur vers un cachet.
+
+== Reçus facultatifs
+
+[[LOG-057]]
+*LOG-057.* Un exploitant de journal PEUT aussi émettre des reçus dans la forme du link:https://www.rfc-editor.org/info/rfc9942[RFC 9942], tirés du même arbre.
+Ces reçus suivent l’architecture du link:https://www.rfc-editor.org/info/rfc9943[RFC 9943].
+Ils NE DOIVENT PAS remplacer la preuve de LOG-050.
+Ces reçus ne portent aucune cosignature de témoin.
+Aucun texte publié ne les relie encore à un point de contrôle C2SP.
+Ils aident les outils de la chaîne d’approvisionnement logicielle à lire le même journal.
+
+== Références
+
+=== Références normatives
+
+* link:https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-proof.md[Transparency Log Proofs], Community Cryptography Specification Project, format `c2sp.org/tlog-proof@v1`, sans étiquette de version, commit du 2026-10-07.
+* link:https://www.rfc-editor.org/info/rfc4648[RFC 4648, The Base16, Base32, and Base64 Data Encodings], IETF, Proposed Standard, 2006-10. link:https://web.archive.org/web/20261108185515/https://www.rfc-editor.org/info/rfc4648/[Copie archivée]
+* link:https://www.etsi.org/deliver/etsi_en/319100_319199/31910201/01.04.01_60/en_31910201v010401p.pdf[ETSI EN 319 102-1, Procedures for Creation and Validation of AdES Digital Signatures, Part 1], ETSI, V1.4.1, 2024-06. link:https://web.archive.org/web/20260713203046/https://www.etsi.org/deliver/etsi_en/319100_319199/31910201/01.04.01_60/en_31910201v010401p.pdf[Copie archivée]
+* link:https://www.etsi.org/deliver/etsi_ts/119100_119199/11910202/01.04.01_60/ts_11910202v010401p.pdf[ETSI TS 119 102-2, Signature Validation Report], ETSI, V1.4.1, 2023-06. link:https://web.archive.org/web/20250119050746/https://www.etsi.org/deliver/etsi_ts/119100_119199/11910202/01.04.01_60/ts_11910202v010401p.pdf[Copie archivée]
+
+=== Références informatives
+
+* link:https://www.rfc-editor.org/info/rfc9942[RFC 9942, COSE Receipts], IETF, Proposed Standard, 2026-06. link:https://web.archive.org/web/20261024144359/https://www.rfc-editor.org/info/rfc9942/[Copie archivée]
+* link:https://www.rfc-editor.org/info/rfc9943[RFC 9943, An Architecture for Trustworthy and Transparent Digital Supply Chains], IETF, Standards Track, 2026-06. link:https://web.archive.org/web/20261103011204/https://www.rfc-editor.org/info/rfc9943/[Copie archivée]
+* link:https://www.govinfo.gov/about/authentication[Authentication], United States Government Publishing Office, GovInfo. link:https://web.archive.org/web/20261106041728/https://www.govinfo.gov/about/authentication[Copie archivée]
+
+== Historique du document
+
+[cols="1,1,4",options="header"]
+|===
+|Version |Date |Changement
+|0.1.0 |2026-11-11 |Première version.
+|===

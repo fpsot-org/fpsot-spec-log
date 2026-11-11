@@ -1,0 +1,30 @@
+# FPSOT signed records and transparency log specification
+
+> How a public body seals the records that it issues and keeps them verifiable: ETSI seals in the formats of Implementing Regulation (EU) 2026/248 at level B-LT, RFC 3161 time stamps, a C2SP transparency log of salted hashes with yearly shards and an independent mirror, witnesses under a published tlog-policy, offline tlog-proof bundles for readers, monitoring, RFC 4998 evidence records for long-term preservation, retention and transfer, and algorithm agility toward post-quantum seals.
+
+## Specification
+
+- [Overview](spec/en/index.adoc): roles, profiles, legal status, conformance and cited versions; LOG-001 to LOG-005.
+- [Seals and signatures](spec/en/seals.adoc): LOG-010 to LOG-019.
+- [Time stamps](spec/en/time-stamps.adoc): LOG-020 to LOG-024.
+- [Transparency log](spec/en/transparency-log.adoc): LOG-030 to LOG-038.
+- [Witnesses and policy](spec/en/witnesses.adoc): LOG-040 to LOG-046.
+- [Proofs and verification](spec/en/proofs.adoc): LOG-050 to LOG-057.
+- [Monitoring and incident response](spec/en/monitoring.adoc): LOG-060 to LOG-064.
+- [Long-term preservation](spec/en/preservation.adoc): LOG-070 to LOG-075.
+- [Retention, redaction and transfer](spec/en/retention.adoc): LOG-080 to LOG-085.
+- [Algorithm agility and post-quantum](spec/en/post-quantum.adoc): LOG-090 to LOG-093.
+- [Reference stack](spec/en/reference-stack.adoc): informative.
+- [Questions for counsel](spec/en/questions-for-counsel.adoc): informative, not legal advice.
+
+## Examples
+
+- [Witness policy](examples/records-log.tlog-policy)
+- [Proof of a record](examples/sealed-record.tlog-proof)
+- [Seal manifest](examples/seal-manifest.json)
+- [How-to guide: seal and publish a series of records](docs/modules/en/pages/index.adoc)
+
+## Optional
+
+- [Agent skill](skill/SKILL.md)
+- [Français](spec/fr/index.adoc)

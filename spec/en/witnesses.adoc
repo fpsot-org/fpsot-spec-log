@@ -1,0 +1,118 @@
+= Witnesses and policy
+include::_fpsot-terms.adoc[]
+
+A log operator could show one history to one reader and another history to someone else.
+This attack is called a split view.
+A {term-witness} checks each new checkpoint against the last one it saw.
+It cosigns the new one only when the log has only grown.
+One witness proves that the log only grows.
+Several independent witnesses make a split view visible, because the operator would need all of them to lie.
+
+The observability specification makes one witness a SHOULD, under OBS-114, which suits an audit log that its operator reads.
+A log of public records serves the public, the courts and other governments, so this page makes witnesses a MUST.
+It is stricter than OBS-114, and it does not contradict it.
+
+These rules apply to the issuer, to each witness and to each verifier.
+
+== The policy
+
+[[LOG-040]]
+*LOG-040.* An issuer MUST publish a witness policy for each shard, before the shard takes its first entry.
+The policy MUST follow the format of link:https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-policy.md[C2SP tlog-policy], at the commit that the overview page gives.
+It MUST name the log key of the shard, each witness with its key, and exactly one quorum.
+It MUST sit at a stable {abbr-https-first} address, which the trust-anchor set of LOG-017 gives.
+A verifier then knows, from published material alone, which cosignatures make a checkpoint valid.
+The file `examples/records-log.tlog-policy` shows a policy.
+
+[[LOG-041]]
+*LOG-041.* The quorum of each policy MUST require cosignatures from both of these groups.
+
+* At least two public witnesses that are independent of the issuer, under LOG-042.
+* At least one accountable domestic witness.
+This witness is a public body of the same country as the issuer, other than the issuer.
+It can be another order of government, an auditor general or a national archives.
+
+A policy MUST NOT use `quorum none`.
+It SHOULD name the two groups `public` and `domestic`, and join them in a group with the threshold `all`.
+The `public` group SHOULD list at least three witnesses, so that the log keeps its quorum when one witness fails.
+The public witnesses guard against a domestic collusion.
+The domestic witness is a party that answers to the same public.
+The Sigsum project uses a similar quorum of two witnesses out of three in its test policy.
+
+[[LOG-042]]
+*LOG-042.* A witness MUST be independent of the issuer and of the log operator.
+This excludes the archives function of the operator that OBS-114 allows.
+It MUST belong to another organization, hold its own keys and run on infrastructure that they do not control.
+The issuer MUST publish, with the policy, the log operator, and the operator and a contact address of each witness.
+At least once a year, the issuer MUST check that each witness still cosigns, and replace a witness that stopped.
+A witness that the issuer controls would add nothing to the proof.
+
+Public witness networks are still young.
+The operators of `witness-network.org` describe it as experimental, and they publish no service level.
+A policy therefore names witnesses, not a network.
+
+== Witnesses
+
+[[LOG-043]]
+*LOG-043.* A witness SHOULD cosign with ML-DSA-44 of link:https://csrc.nist.gov/pubs/fips/204/final[FIPS 204], as OBS-114 recommends.
+It MAY add an Ed25519 cosignature in the format of link:https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-cosignature.md[C2SP tlog-cosignature v1.1.0].
+This rule restates OBS-114 and adds the Ed25519 option that OBS-114 leaves open.
+
+[[LOG-044]]
+*LOG-044.* A witness MUST follow link:https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-witness.md[C2SP tlog-witness v1.1.0].
+It MUST check the consistency proof of each new checkpoint before it cosigns.
+It MUST refuse a checkpoint that does not extend the last one it cosigned.
+It SHOULD serve its latest cosigned checkpoint of each log to monitors, at most one hour late.
+Monitors can then compare what each witness saw.
+
+== Changes and release
+
+[[LOG-045]]
+*LOG-045.* An issuer MUST NOT edit a published policy.
+It SHOULD change witnesses only when it starts a new shard.
+A witness may stop during a shard.
+The issuer MAY then publish a new version of the policy of that shard.
+
+Each version MUST state the first tree size that it governs.
+Each version MUST stay published as long as a proof under it must stay verifiable.
+A verifier MUST apply the version whose range holds the tree size of the checkpoint.
+
+A reader can then check an old proof against the witnesses of its own time.
+
+[[LOG-046]]
+*LOG-046.* An issuer MUST NOT deliver a proof whose checkpoint lacks the quorum of the policy.
+It MAY deliver a sealed record first, and its proof once the quorum has cosigned a checkpoint that covers it.
+The deployment inventory MUST state the longest delay between a seal and its proof.
+A proof without its quorum would let a split view through.
+
+== Witnesses that the project runs
+
+This section is informative.
+No government runs a public witness today.
+For that reason, {abbr-fpsot-first} plans to run one public witness.
+It will also ask a domestic public body to act as a witness for a first pilot.
+Any issuer can list it in its policy, beside other witnesses.
+A witness is a lasting service, so {abbr-fpsot} will publish its operator, its keys and its terms before it starts.
+
+== References
+
+=== Normative
+
+* link:https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-policy.md[Transparency log trust policy], Community Cryptography Specification Project, no version tag, commit of 2026-10-07.
+* link:https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-witness.md[Transparency Log Witness Protocol], Community Cryptography Specification Project, v1.1.0, 2026-10-07.
+* link:https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-cosignature.md[Transparency Log Cosignatures], Community Cryptography Specification Project, v1.1.0, 2026-10-07.
+* link:https://csrc.nist.gov/pubs/fips/204/final[FIPS 204, Module-Lattice-Based Digital Signature Standard], NIST, 2024-08-13. link:https://web.archive.org/web/20261101165037/https://csrc.nist.gov/pubs/fips/204/final[Archived copy]
+
+=== Informative
+
+* link:https://blog.transparency.dev/can-i-get-a-witness-network[Can I Get A Witness (Network)?], transparency.dev, 2024-11-07. link:https://web.archive.org/web/20261023112818/https://blog.transparency.dev/can-i-get-a-witness-network[Archived copy]
+* link:https://witness-network.org/[Witness Network], witness-network.org community. link:https://web.archive.org/web/20261023190143/https://witness-network.org/[Archived copy]
+* link:https://www.sigsum.org/getting-started/[Getting started], Sigsum project. link:https://web.archive.org/web/20260627115118/https://www.sigsum.org/getting-started/[Archived copy]
+
+== Document history
+
+[cols="1,1,4",options="header"]
+|===
+|Version |Date |Change
+|0.1.0 |2026-11-11 |First version.
+|===

@@ -1,0 +1,43 @@
+code: CA
+name: {en: Canada, fr: Canada}
+rows:
+  - id: LOG-013
+    text: {en: "The guidance calls for long-term validation that binds the signing time, the certificates and their revocation status, in PAdES, XAdES or CAdES. It warns that a change of format during archiving can break a signature.", fr: "Le guide demande une validation à long terme qui lie l’heure de signature, les certificats et leur état de révocation, en PAdES, XAdES ou CAdES. Il avertit qu’un changement de format pendant l’archivage peut briser une signature."}
+    status: same
+    source: {title: "Treasury Board of Canada Secretariat, Government of Canada Guidance on Using Electronic Signatures", version: "1.0", date: "2019-07-15", url: "https://www.canada.ca/en/government/system/digital-government/online-security-privacy/government-canada-guidance-using-electronic-signatures.html", archive: "https://web.archive.org/web/20251118051144/https://www.canada.ca/en/government/system/digital-government/online-security-privacy/government-canada-guidance-using-electronic-signatures.html"}
+    last_checked: "2026-11-10"
+  - id: LOG-015
+    text: {en: "ITSP.40.111 approves RSA of 2048 bits or more, rising to 3072 by the end of 2030, ECDSA on P-256, P-384 and P-521, and EdDSA. It phases out RSA, ECDSA and EdDSA signatures by the end of 2035 unless paired with a post-quantum scheme.", fr: "L’ITSP.40.111 approuve RSA de 2048 bits ou plus, puis 3072 d’ici la fin de 2030, ECDSA sur P-256, P-384 et P-521, et EdDSA. Il abandonne les signatures RSA, ECDSA et EdDSA d’ici la fin de 2035, sauf si elles sont jumelées à un algorithme postquantique."}
+    status: looser
+    source: {title: "Canadian Centre for Cyber Security, ITSP.40.111, Cryptographic algorithms for UNCLASSIFIED, PROTECTED A, and PROTECTED B information", version: "5", date: "2026-05-29", url: "https://www.cyber.gc.ca/en/guidance/cryptographic-algorithms-unclassified-protected-protected-b-information-itsp40111", archive: "https://web.archive.org/web/20261020132957/https://www.cyber.gc.ca/en/guidance/cryptographic-algorithms-unclassified-protected-protected-b-information-itsp40111"}
+    last_checked: "2026-11-10"
+  - id: LOG-017
+    text: {en: "The President of the Treasury Board recognizes the certificate authorities of secure electronic signatures, and the Secretariat lists them. Canada publishes no trusted list of the European kind.", fr: "Le président du Conseil du Trésor reconnaît les autorités de certification des signatures électroniques sécurisées, et le Secrétariat en publie la liste. Le Canada ne publie aucune liste de confiance de type européen."}
+    status: looser
+    source: {title: "Secure Electronic Signature Regulations, SOR/2005-30, section 4", date: "2011-03-10", url: "https://laws-lois.justice.gc.ca/eng/regulations/SOR-2005-30/", archive: "https://web.archive.org/web/20260906225227/https://laws-lois.justice.gc.ca/eng/regulations/SOR-2005-30/"}
+    last_checked: "2026-11-10"
+  - id: LOG-020
+    text: {en: "Level 4 needs a secure time stamp from a trusted source. Levels 2 and 3 may use the local system time.", fr: "Le niveau 4 exige un horodatage sécurisé d’une source de confiance. Les niveaux 2 et 3 peuvent employer l’heure locale du système."}
+    status: looser
+    source: {title: "Treasury Board of Canada Secretariat, Government of Canada Guidance on Using Electronic Signatures", version: "1.0", date: "2019-07-15", url: "https://www.canada.ca/en/government/system/digital-government/online-security-privacy/government-canada-guidance-using-electronic-signatures.html", archive: "https://web.archive.org/web/20251118051144/https://www.canada.ca/en/government/system/digital-government/online-security-privacy/government-canada-guidance-using-electronic-signatures.html"}
+    last_checked: "2026-11-10"
+  - id: LOG-041
+    text: {en: "The federal guidance on electronic signatures does not mention transparency logs or witnesses.", fr: "Le guide fédéral sur les signatures électroniques ne mentionne ni journal de transparence ni témoin."}
+    status: not-covered
+    source: {title: "Treasury Board of Canada Secretariat, Government of Canada Guidance on Using Electronic Signatures", version: "1.0", date: "2019-07-15", url: "https://www.canada.ca/en/government/system/digital-government/online-security-privacy/government-canada-guidance-using-electronic-signatures.html", archive: "https://web.archive.org/web/20251118051144/https://www.canada.ca/en/government/system/digital-government/online-security-privacy/government-canada-guidance-using-electronic-signatures.html"}
+    last_checked: "2026-11-10"
+  - id: LOG-081
+    text: {en: "Institutions destroy records only with the consent of Library and Archives Canada, through a disposition authorization, and set their own retention periods. No federal rule requires or forbids keeping a hash of a record after its lawful destruction.", fr: "Les institutions ne détruisent des documents qu’avec le consentement de Bibliothèque et Archives Canada, par une autorisation de disposition, et fixent elles-mêmes leurs durées de conservation. Aucune règle fédérale n’exige ni n’interdit de garder un condensé d’un document après sa destruction légale."}
+    status: not-covered
+    source: {title: "Library and Archives Canada, Information disposition, frequently asked questions", url: "https://www.canada.ca/en/library-archives/services/government/information-disposition/records/frequently-asked-questions.html", archive: "https://web.archive.org/web/20261001125538/https://www.canada.ca/en/library-archives/services/government/information-disposition/records/frequently-asked-questions.html"}
+    last_checked: "2026-11-10"
+  - id: LOG-083
+    text: {en: "Keeping an electronic document meets a retention duty if its format does not change the information, it stays readable, and the origin, destination and times of a sent document stay with it. The act asks for no transfer record.", fr: "Conserver un document électronique remplit une obligation de conservation si son format ne change pas l’information, s’il reste lisible, et si l’origine, la destination et les heures d’un document transmis l’accompagnent. La loi n’exige aucune trace de transfert."}
+    status: looser
+    source: {title: "Personal Information Protection and Electronic Documents Act, section 37", date: "2026-10-19", url: "https://laws-lois.justice.gc.ca/eng/acts/P-8.6/page-5.html", archive: "https://web.archive.org/web/20261022152622/https://laws-lois.justice.gc.ca/ENG/ACTS/P-8.6/page-5.html"}
+    last_checked: "2026-11-10"
+  - id: LOG-092
+    text: {en: "Departments complete their move to post-quantum cryptography by the end of 2031 for high-priority systems and by the end of 2035 for the rest.", fr: "Les ministères achèvent leur passage à la cryptographie postquantique d’ici la fin de 2031 pour les systèmes de haute priorité, et d’ici la fin de 2035 pour les autres."}
+    status: same
+    source: {title: "Canadian Centre for Cyber Security, ITSM.40.001, Roadmap for the migration to post-quantum cryptography for the Government of Canada", date: "2025-06-23", url: "https://www.cyber.gc.ca/en/guidance/roadmap-migration-post-quantum-cryptography-government-canada-itsm40001", archive: "https://web.archive.org/web/20261101193928/https://www.cyber.gc.ca/en/guidance/roadmap-migration-post-quantum-cryptography-government-canada-itsm40001"}
+    last_checked: "2026-11-10"
