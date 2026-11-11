@@ -1,4 +1,4 @@
-= Specification title
+= FPSOT signed records and transparency log specification
 :doctype: book
 :toc:
 
