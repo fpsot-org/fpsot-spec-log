@@ -6,6 +6,17 @@ and versions follow [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.h
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-11-14
+
+### Fixed
+
+- References: archived copies for the sources that had none. The C2SP rows of the comparison data now point at Wayback snapshots.
+- LOG-018: a scheme `other` whose value is the object identifier of the certificate policy, for certificates outside the TBS, ICPG and eIDAS schemes.
+- LOG-020: an authority under another policy publishes a clause-by-clause mapping to ETSI EN 319 421, in place of an untestable "equivalent" policy.
+- LOG-062: the second approval covers requests outside the record types that the issuer lists in its inventory.
+- Profiles: LOG-053 moves to the `seal-log` profiles; the `record.withdrawn` event of LOG-064 is noted as belonging to them, with LOG-082.
+- Example check: `+json` and `+xml` media types take JAdES and XAdES; group names other than `public` and `domestic` give a warning, not a failure.
+
 ## [0.1.0] - 2026-11-11
 
 ### Added
@@ -22,5 +33,6 @@ and versions follow [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.h
 - Comparison data with Canada and Québec rows.
 - How-to guide that seals and publishes a series of records.
 
-[Unreleased]: https://github.com/fpsot-org/fpsot-spec-log/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/fpsot-org/fpsot-spec-log/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/fpsot-org/fpsot-spec-log/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/fpsot-org/fpsot-spec-log/releases/tag/v0.1.0

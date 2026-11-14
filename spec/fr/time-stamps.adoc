@@ -15,7 +15,7 @@ Un émetteur peut l’atteindre avec une autorité située hors d’Europe.
 [[LOG-020]]
 *LOG-020.* Un émetteur DOIT obtenir l’horodatage de chaque cachet d’une {abbr-tsa-first} qui suit le link:https://www.rfc-editor.org/info/rfc3161[RFC 3161].
 L’autorité DOIT appliquer une politique qui respecte link:https://www.etsi.org/deliver/etsi_en/319400_319499/319421/01.03.01_60/en_319421v010301p.pdf[ETSI EN 319 421 V1.3.1].
-Une politique équivalente que l’émetteur publie PEUT en tenir lieu.
+Une autorité qui applique une autre politique DOIT publier une correspondance clause par clause avec l’ETSI EN 319 421.
 Certains émetteurs veulent l’effet d’un horodatage qualifié dans l’Union européenne.
 Un tel émetteur DOIT employer une autorité qu’une liste de confiance de l’Union européenne désigne comme qualifiée.
 L’heure vient d’une partie autre que l’émetteur, et l’émetteur ne peut donc pas antidater un document.

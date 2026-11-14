@@ -21,7 +21,9 @@ the root of the checkpoint (RFC 6962). It also checks that the checkpoint has
 no extension lines (LOG-033), that the policy asks for at least two public
 witnesses and one domestic witness (LOG-041), and that the manifest has the
 required fields with allowed values and holds neither the salt nor personal
-information (LOG-019, LOG-085). It rejects a policy that gives the same key on two
+information (LOG-019, LOG-085). A policy whose groups are not named public and
+domestic gets a warning, since those names are a SHOULD of LOG-041, and the
+quorum shape is then not checked. It rejects a policy that gives the same key on two
 lines, which tlog-policy forbids. For the shard year of LOG-035 it uses the year
 of sealedAt, since the examples carry no logging time.
 
@@ -37,10 +39,15 @@ import re
 import sys
 
 errors = []
+warnings = []
 
 
 def fail(where, message):
     errors.append(f"{where}: {message}")
+
+
+def warn(where, message):
+    warnings.append(f"{where}: warning: {message}")
 
 
 # --- Ed25519 verification, from the definitions of RFC 8032 -----------------
@@ -249,7 +256,7 @@ def check_quorum_shape(policy, where):
         return
     for group in ("public", "domestic"):
         if group not in policy["groups"]:
-            fail(where, f"the policy has no group named {group} (LOG-041)")
+            warn(where, f"the policy has no group named {group}, so the shape of the quorum is not checked; LOG-041 recommends the names public and domestic")
             return
     public, domestic = leaves(policy, "public"), leaves(policy, "domestic")
     if public & domestic:
@@ -381,7 +388,8 @@ UUID7 = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-
 INSTANT = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{1,9})?Z$")
 SIN = re.compile(r"(?<![\w.-])\d{3}[ -]?\d{3}[ -]?\d{3}(?![\w.-])")
 EMAIL = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}")
-FORMATS = {"application/json": "jades", "application/pdf": "pades", "application/xml": "xades"}
+FORMATS = {"application/json": "jades", "application/pdf": "pades", "application/xml": "xades", "text/xml": "xades"}
+OID = re.compile(r"^(0|1|2)(\.(0|[1-9][0-9]*))+$")
 REQUIRED = ("id", "profile", "mediaType", "format", "formatVersion", "level", "signerType",
             "algorithm", "certificateSha256", "trustAnchorSet", "assuranceLevel", "sealedAt",
             "timeStampAuthority", "retentionRule")
@@ -391,6 +399,29 @@ LEVELS = ("b-lt", "b-lta")
 SIGNERS = ("organizational-seal", "personal-signature")
 ALGORITHMS = ("ecdsa-p384-sha384", "rsa-3072-sha384", "rsa-4096-sha384", "rsa-pss-3072-sha384", "rsa-pss-4096-sha384")
 SCHEMES = {"tbs": ("1", "2", "3", "4"), "icpg": ("base", "moyen", "eleve"), "eidas": ("advanced", "qualified")}
+
+
+def format_for(media):
+    """LOG-011: the seal format that a media type takes. A structured syntax suffix of
+    RFC 6838 (+json, +xml) takes the format of its base type; anything else is ASiC-E."""
+    base = str(media).split(";", 1)[0].strip().lower()
+    if base in FORMATS:
+        return FORMATS[base]
+    if base.endswith("+json"):
+        return "jades"
+    if base.endswith("+xml"):
+        return "xades"
+    return "asic-e"
+
+
+def level_ok(level):
+    """LOG-018: a known scheme and value, or the scheme other with a certificate-policy object identifier."""
+    if not isinstance(level, dict):
+        return False
+    scheme, value = level.get("scheme"), level.get("value")
+    if scheme == "other":
+        return isinstance(value, str) and bool(OID.match(value))
+    return value in SCHEMES.get(scheme, ())
 
 
 def strings(value):
@@ -429,8 +460,8 @@ def check_manifest(path):
     media, fmt = m.get("mediaType"), m.get("format")
     if fmt not in ("jades", "pades", "xades", "asic-e"):
         fail(where, "format must be jades, pades, xades or asic-e (LOG-010)")
-    elif FORMATS.get(media, "asic-e") != fmt:
-        fail(where, f"a record of media type {media} takes the format {FORMATS.get(media, 'asic-e')}, not {fmt} (LOG-011)")
+    elif format_for(media) != fmt:
+        fail(where, f"a record of media type {media} takes the format {format_for(media)}, not {fmt} (LOG-011)")
     if m.get("level") not in LEVELS:
         fail(where, "level must be b-lt or b-lta: B-B and B-T do not conform (LOG-013)")
     if m.get("signerType") not in SIGNERS:
@@ -441,10 +472,8 @@ def check_manifest(path):
         fail(where, "certificateSha256 must be 64 lower-case hexadecimal digits")
     if not str(m.get("trustAnchorSet", "")).startswith("https://"):
         fail(where, "trustAnchorSet must be the https URL of a published trust-anchor set (LOG-017, LOG-018)")
-    level = m.get("assuranceLevel")
-    if not isinstance(level, dict) or level.get("scheme") not in SCHEMES \
-            or level.get("value") not in SCHEMES.get(level.get("scheme"), ()):
-        fail(where, "assuranceLevel needs a known scheme and value (LOG-018)")
+    if not level_ok(m.get("assuranceLevel")):
+        fail(where, "assuranceLevel needs a known scheme and value, or the scheme other with a certificate-policy object identifier (LOG-018)")
     if "sealedAt" in m and not INSTANT.match(str(m["sealedAt"])):
         fail(where, "sealedAt must be an RFC 3339 instant in UTC")
     if not str(m.get("timeStampAuthority", "")).startswith("https://"):
@@ -519,6 +548,8 @@ def main():
             if year and not checkpoint["origin"].endswith("-" + year):
                 fail(where, f"the origin {checkpoint['origin']} does not name the shard of the year {year}, taken from sealedAt (LOG-035)")
 
+    if warnings:
+        print("\n".join(warnings))
     if errors:
         print("\n".join(errors))
         return 1

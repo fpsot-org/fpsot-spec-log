@@ -15,7 +15,7 @@ An issuer can meet it with an authority outside Europe.
 [[LOG-020]]
 *LOG-020.* An issuer MUST take the time stamp of each seal from a {abbr-tsa-first} that follows link:https://www.rfc-editor.org/info/rfc3161[RFC 3161].
 The authority MUST operate under a policy that meets link:https://www.etsi.org/deliver/etsi_en/319400_319499/319421/01.03.01_60/en_319421v010301p.pdf[ETSI EN 319 421 V1.3.1].
-An equivalent policy that the issuer publishes MAY take its place.
+An authority that operates under another policy MUST publish a clause-by-clause mapping of that policy to ETSI EN 319 421.
 Some issuers want the effect of qualified time stamps in the European Union.
 Such an issuer MUST use a {abbr-tsa} that a trusted list of the European Union names as qualified.
 The time comes from a party other than the issuer, so the issuer cannot date a record after the fact.

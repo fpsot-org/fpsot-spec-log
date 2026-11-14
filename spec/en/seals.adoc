@@ -111,6 +111,7 @@ The level MUST name a scheme and a value from this table.
 |`tbs` |`1`, `2`, `3`, `4` |The four assurance levels of the {abbr-tbs-first} guidance on electronic signatures
 |`icpg` |`base`, `moyen`, `eleve` |The three levels of signature certificates of the Québec government public key infrastructure
 |`eidas` |`advanced`, `qualified` |The kinds of seals of the {abbr-eidas-first}
+|`other` |The object identifier of the certificate policy, in dotted decimal form, such as `2.16.124.113550.1.2.3` |A certificate outside the three schemes above
 |===
 
 A verifier can then show which anchor and which level stood behind each seal.

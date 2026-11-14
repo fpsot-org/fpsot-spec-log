@@ -40,7 +40,8 @@ Anyone else MAY run a monitor, since the log is public.
 [[LOG-062]]
 *LOG-062.* The role that may ask for a seal MUST differ from the role that administers the seal key.
 Each request for a seal MUST come from a person or a service that the identity and access specification authenticates.
-A second person MUST approve a request above a volume that the issuer sets, or outside the usual record types.
+A second person MUST approve a request above a volume that the issuer sets.
+The same applies to a request outside the record types that the issuer lists in its inventory.
 Generating, backing up or rotating a seal key MUST need two people.
 One insider then cannot issue records alone, and the register shows who asked and who approved.
 
@@ -75,7 +76,7 @@ The names follow NAM-050 and NAM-051.
 |Event |When
 |`org.fpsot.log.record.sealed` |The issuer seals a record.
 |`org.fpsot.log.record.resealed` |The issuer seals a record again, under LOG-083.
-|`org.fpsot.log.record.withdrawn` |The issuer withdraws a record, under LOG-082.
+|`org.fpsot.log.record.withdrawn` |The issuer withdraws a record, under LOG-082. Only the `seal-log` and `seal-log-preserve` profiles record this event.
 |`org.fpsot.log.checkpoint.signed` |The log operator signs a checkpoint.
 |`org.fpsot.log.shard.closed` |The log operator closes a shard, under LOG-035.
 |`org.fpsot.log.policy.published` |The issuer publishes a policy or a new version of it, under LOG-045.

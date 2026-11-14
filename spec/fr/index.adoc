@@ -49,8 +49,8 @@ Chaque profil ajoute des règles à celui qui le précède.
 [cols="2,3,4",options="header"]
 |===
 |Profil |Ce qu’il prouve |Règles
-|`seal` |L’origine, l’intégrité et l’heure du cachet |LOG-001 à LOG-005, LOG-010 à LOG-022, LOG-053 à LOG-056, LOG-060, LOG-062 à LOG-064, LOG-080, LOG-083, LOG-090 à LOG-093
-|`seal-log` |Ajoute une preuve publique de publication, la même pour chaque lecteur |Les règles de `seal`, plus LOG-023, LOG-024, LOG-030 à LOG-052, LOG-057, LOG-061, LOG-081, LOG-082, LOG-084, LOG-085
+|`seal` |L’origine, l’intégrité et l’heure du cachet |LOG-001 à LOG-005, LOG-010 à LOG-022, LOG-054 à LOG-056, LOG-060, LOG-062 à LOG-064, LOG-080, LOG-083, LOG-090 à LOG-093
+|`seal-log` |Ajoute une preuve publique de publication, la même pour chaque lecteur |Les règles de `seal`, plus LOG-023, LOG-024, LOG-030 à LOG-053, LOG-057, LOG-061, LOG-081, LOG-082, LOG-084, LOG-085
 |`seal-log-preserve` |Ajoute la preuve de l’intégrité pour toute la durée de conservation |Les règles de `seal-log`, plus LOG-070 à LOG-075
 |===
 
