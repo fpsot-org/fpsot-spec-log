@@ -112,6 +112,7 @@ Le niveau DOIT nommer un régime et une valeur de ce tableau.
 |`tbs` |`1`, `2`, `3`, `4` |Les quatre niveaux d’assurance des lignes directrices du {abbr-tbs-first} sur les signatures électroniques
 |`icpg` |`base`, `moyen`, `eleve` |Les trois niveaux de certificats de signature de l’infrastructure à clés publiques gouvernementale du Québec
 |`eidas` |`advanced`, `qualified` |Les types de cachets du {abbr-eidas-first}
+|`other` |L’identificateur d’objet de la politique de certificat, en notation décimale pointée, comme `2.16.124.113550.1.2.3` |Un certificat hors des trois régimes ci-dessus
 |===
 
 Un vérificateur peut alors montrer quelle ancre et quel niveau soutenaient chaque cachet.

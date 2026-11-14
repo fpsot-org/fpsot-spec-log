@@ -41,10 +41,10 @@ Toute autre partie PEUT exploiter une vigie, puisque le journal est public.
 [[LOG-062]]
 *LOG-062.* Le rôle qui peut demander un cachet DOIT différer du rôle qui administre la clé de cachet.
 Chaque demande de cachet DOIT venir d’une personne ou d’un service qu’authentifie la spécification sur l’identité et l’accès.
-Une deuxième personne DOIT approuver une demande au-delà d’un volume que fixe l’émetteur, ou hors des types de documents habituels.
+Une deuxième personne DOIT approuver une demande au-delà d’un volume que fixe l’émetteur.
+Il en va de même pour une demande hors des types de documents que l’émetteur énumère dans son inventaire.
 Produire, sauvegarder ou remplacer une clé de cachet DOIT exiger deux personnes.
-Une personne de l’intérieur ne peut alors pas émettre de documents seule.
-Le registre montre qui a demandé et qui a approuvé.
+Aucun initié ne peut alors émettre de documents seul, et le registre montre qui a demandé et qui a approuvé.
 
 == Incidents
 
@@ -78,7 +78,7 @@ Les noms suivent NAM-050 et NAM-051.
 |Événement |Quand
 |`org.fpsot.log.record.sealed` |L’émetteur appose un cachet sur un document.
 |`org.fpsot.log.record.resealed` |L’émetteur appose de nouveau un cachet sur un document, selon LOG-083.
-|`org.fpsot.log.record.withdrawn` |L’émetteur retire un document, selon LOG-082.
+|`org.fpsot.log.record.withdrawn` |L’émetteur retire un document, selon LOG-082. Seuls les profils `seal-log` et `seal-log-preserve` consignent cet événement.
 |`org.fpsot.log.checkpoint.signed` |L’exploitant du journal signe un point de contrôle.
 |`org.fpsot.log.shard.closed` |L’exploitant du journal ferme une tranche, selon LOG-035.
 |`org.fpsot.log.policy.published` |L’émetteur publie une politique ou une nouvelle version de celle-ci, selon LOG-045.

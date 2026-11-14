@@ -49,8 +49,8 @@ Each profile adds rules to the one before it.
 [cols="2,3,4",options="header"]
 |===
 |Profile |What it proves |Rules
-|`seal` |Origin, integrity and time at sealing |LOG-001 to LOG-005, LOG-010 to LOG-022, LOG-053 to LOG-056, LOG-060, LOG-062 to LOG-064, LOG-080, LOG-083, LOG-090 to LOG-093
-|`seal-log` |Adds public proof of publication, the same for every reader |The rules of `seal`, plus LOG-023, LOG-024, LOG-030 to LOG-052, LOG-057, LOG-061, LOG-081, LOG-082, LOG-084, LOG-085
+|`seal` |Origin, integrity and time at sealing |LOG-001 to LOG-005, LOG-010 to LOG-022, LOG-054 to LOG-056, LOG-060, LOG-062 to LOG-064, LOG-080, LOG-083, LOG-090 to LOG-093
+|`seal-log` |Adds public proof of publication, the same for every reader |The rules of `seal`, plus LOG-023, LOG-024, LOG-030 to LOG-053, LOG-057, LOG-061, LOG-081, LOG-082, LOG-084, LOG-085
 |`seal-log-preserve` |Adds proof of integrity for the whole retention period |The rules of `seal-log`, plus LOG-070 to LOG-075
 |===
 

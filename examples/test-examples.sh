@@ -38,6 +38,23 @@ broken() {
   fi
 }
 
+# accepted NAME FILE PYTHON-EXPRESSION [EXPECTED-TEXT]
+# Copies the examples, rewrites FILE with the expression, and expects the check
+# to pass. With EXPECTED-TEXT, the output must also carry that text, such as a
+# warning.
+accepted() {
+  local name=$1 file=$2 expr=$3 want=${4:-} dir="$work/$1"
+  mkdir -p "$dir"
+  for f in "${files[@]}"; do cp "$here/$f" "$dir/"; done
+  $python -I -c "import sys,pathlib; p=pathlib.Path(sys.argv[1]); t=p.read_text(encoding='utf-8'); p.write_text($expr, encoding='utf-8')" "$dir/$file"
+  if ! out=$(check "$dir"); then
+    echo "FAIL: the check rejected the acceptable copy $name:"; echo "$out"; fail=1; return
+  fi
+  if [ -n "$want" ] && ! grep -qF -- "$want" <<<"$out"; then
+    echo "FAIL: the check accepted $name, but without the expected text: $want"; echo "$out"; fail=1
+  fi
+}
+
 # The record changed after it was logged: the leaf no longer matches.
 broken changed-record sealed-record.txt "t.replace('2027-0042', '2027-0043')" "inclusion proof does not lead"
 # A wrong salt in the extra line.
@@ -78,6 +95,15 @@ broken wrong-entry seal-manifest.json "t.replace('UOrD3F5XL', 'UOrD3F5XM')" "log
 broken bad-hybrid seal-manifest.json "t.replace('\"profile\"', '\"hybridWith\": {\"algorithm\": \"ml-dsa-87\"}, \"profile\"', 1)" "hybridWith needs"
 # A record of 2027 in the shard of 2026 (LOG-035).
 broken wrong-year seal-manifest.json "t.replace('2027-03-15T14:30:00Z', '2026-12-31T23:30:00Z')" "does not name the shard of the year 2026"
+# A structured syntax suffix picks the format of its base type: +json is JAdES, +xml is XAdES (LOG-011).
+accepted suffix-json seal-manifest.json "t.replace('application/json', 'application/ld+json')"
+accepted suffix-xml seal-manifest.json "t.replace('application/json', 'application/atom+xml').replace('\"jades\"', '\"xades\"')"
+broken suffix-xml-as-asic seal-manifest.json "t.replace('application/json', 'application/atom+xml').replace('\"jades\"', '\"asic-e\"')" "takes the format xades"
+# A certificate outside the named schemes carries its certificate-policy object identifier (LOG-018).
+accepted other-scheme seal-manifest.json "t.replace('\"scheme\": \"icpg\"', '\"scheme\": \"other\"').replace('\"value\": \"eleve\"', '\"value\": \"2.16.124.113550.1.2.3\"')"
+broken other-scheme-not-oid seal-manifest.json "t.replace('\"scheme\": \"icpg\"', '\"scheme\": \"other\"')" "assuranceLevel needs"
+# Group names other than public and domestic are a SHOULD (LOG-041): a warning, not a failure.
+accepted other-group-names records-log.tlog-policy "t.replace('group public 2', 'group outside 2').replace('group domestic any', 'group national any').replace('all public domestic', 'all outside national')" "warning"
 
 [ $fail -eq 0 ] && echo "PASS"
 exit $fail

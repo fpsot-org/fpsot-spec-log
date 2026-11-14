@@ -39,7 +39,7 @@ rows:
     topic: log-entries
     requirement: {en: "Log only a salted hash of the exact sealed bytes of each record.", fr: "N’inscrire au journal qu’un condensé salé des octets cachetés exacts de chaque document."}
     international: {en: "The proof format leaves the leaf to each application, and lets an unauthenticated extra line carry what a verifier needs to rebuild it.", fr: "Le format de preuve laisse la feuille à chaque application, et permet à une ligne extra non authentifiée de porter ce qu’il faut pour la reconstruire."}
-    international_source: {title: "C2SP tlog-proof, format c2sp.org/tlog-proof@v1, commit of 2026-10-07", url: "https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-proof.md", archive: "https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-proof.md"}
+    international_source: {title: "C2SP tlog-proof, format c2sp.org/tlog-proof@v1, commit of 2026-10-07", url: "https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-proof.md", archive: "https://web.archive.org/web/20261114193404/https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-proof.md"}
     fpsot: {en: "SHA-256 over a random salt of 32 bytes or more, then the sealed bytes, as in OBS-111. The salt dies with the record.", fr: "Un SHA-256 d’un sel aléatoire d’au moins 32 octets, suivi des octets cachetés, comme dans OBS-111. Le sel disparaît avec le document."}
   - id: LOG-035
     topic: log-shards
@@ -51,13 +51,13 @@ rows:
     topic: witnesses
     requirement: {en: "Require at least two public witnesses and one domestic witness in a published policy.", fr: "Exiger au moins deux témoins publics et un témoin national dans une politique publiée."}
     international: {en: "The policy format lets each verifier set its own quorum of witnesses. It sets no minimum.", fr: "Le format de politique permet à chaque vérificateur de fixer son propre quorum de témoins. Il ne fixe aucun minimum."}
-    international_source: {title: "C2SP tlog-policy, commit of 2026-10-07", url: "https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-policy.md", archive: "https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-policy.md"}
+    international_source: {title: "C2SP tlog-policy, commit of 2026-10-07", url: "https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-policy.md", archive: "https://web.archive.org/web/20261114193243/https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-policy.md"}
     fpsot: {en: "A published policy per shard, with a group of public witnesses and a group of domestic witnesses, both required.", fr: "Une politique publiée par tranche, avec un groupe de témoins publics et un groupe de témoins nationaux, tous deux exigés."}
   - id: LOG-050
     topic: proofs
     requirement: {en: "Deliver an offline proof with each published record.", fr: "Remettre une preuve hors ligne avec chaque document publié."}
     international: {en: "A proof bundles the index, the inclusion path and the cosigned checkpoint, and works offline like a detached signature.", fr: "Une preuve regroupe l’index, le chemin d’inclusion et le point de contrôle cosigné, et fonctionne hors ligne comme une signature détachée."}
-    international_source: {title: "C2SP tlog-proof, format c2sp.org/tlog-proof@v1, commit of 2026-10-07", url: "https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-proof.md", archive: "https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-proof.md"}
+    international_source: {title: "C2SP tlog-proof, format c2sp.org/tlog-proof@v1, commit of 2026-10-07", url: "https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-proof.md", archive: "https://web.archive.org/web/20261114193404/https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-proof.md"}
     fpsot: {en: "The same format, delivered with the record once the quorum has cosigned, with the salt only for those who may receive the record.", fr: "Le même format, remis avec le document une fois le quorum atteint, avec le sel seulement pour qui peut recevoir le document."}
   - id: LOG-070
     topic: preservation
@@ -87,7 +87,7 @@ rows:
     topic: log-entries
     requirement: {en: "Destroy a record and its salt together, and never remove its log entry.", fr: "Détruire ensemble un document et son sel, sans jamais retirer son entrée du journal."}
     international: {en: "A tiled log may hide an old prefix of entries only under a retention policy of its ecosystem. Without such a policy, it must not prune.", fr: "Un journal en tuiles peut masquer un ancien préfixe d’entrées seulement selon une politique de conservation de son écosystème. Sans une telle politique, il ne doit pas élaguer."}
-    international_source: {title: "C2SP tlog-tiles, section Pruning", version: "v1.0.0", date: "2026-10-07", url: "https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-tiles.md", archive: "https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-tiles.md"}
+    international_source: {title: "C2SP tlog-tiles, section Pruning", version: "v1.0.0", date: "2026-10-07", url: "https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-tiles.md", archive: "https://web.archive.org/web/20261114193526/https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-tiles.md"}
     fpsot: {en: "No pruning. The record and its salt go on schedule, and the leaf stays as a hash that reveals nothing.", fr: "Aucun élagage. Le document et son sel disparaissent selon le calendrier, et la feuille reste comme un condensé qui ne révèle rien."}
   - id: LOG-083
     topic: preservation
@@ -99,7 +99,7 @@ rows:
     topic: log-shards
     requirement: {en: "Treat each closed log shard as a records series with its own retention rule.", fr: "Traiter chaque tranche fermée du journal comme une série documentaire avec sa propre règle de conservation."}
     international: {en: "The tiled log format leaves it to each ecosystem to say how long entries stay available.", fr: "Le format de journal en tuiles laisse à chaque écosystème le soin de dire combien de temps les entrées restent accessibles."}
-    international_source: {title: "C2SP tlog-tiles, section Retention Policies", version: "v1.0.0", date: "2026-10-07", url: "https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-tiles.md", archive: "https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-tiles.md"}
+    international_source: {title: "C2SP tlog-tiles, section Retention Policies", version: "v1.0.0", date: "2026-10-07", url: "https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-tiles.md", archive: "https://web.archive.org/web/20261114193526/https://github.com/C2SP/C2SP/blob/b2dd9892338af7009733a4575a6da05811ffae6c/tlog-tiles.md"}
     fpsot: {en: "A rule of the retention schedule for each shard, permanent for shards that hold permanent records.", fr: "Une règle du calendrier de conservation pour chaque tranche, permanente pour les tranches qui contiennent des documents permanents."}
   - id: LOG-092
     topic: algorithms

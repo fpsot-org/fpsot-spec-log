@@ -25,19 +25,19 @@ OBS-110 to OBS-117 belong to the observability specification; this one applies t
 ## Seals
 
 - Only the Annex I formats of Implementing Regulation (EU) 2026/248 at their pinned versions; no Annex II legacy formats for new seals (LOG-010).
-- Format by media type: JSON → JAdES, PDF → PAdES, XML → XAdES, anything else or several files → detached CAdES in ASiC-E; the container may hold only time stamps added before logging (LOG-011).
+- Format by media type: JSON → JAdES, PDF → PAdES, XML → XAdES, `+json` and `+xml` suffixes as their base type, anything else or several files → detached CAdES in ASiC-E; the container may hold only time stamps added before logging (LOG-011).
 - JAdES carries `x5c` with the seal chain, signed or unsigned header (LOG-012).
 - Level B-LT or higher; B-B and B-T alone do not conform; B-LTA may; a B-LTA augmentation after logging is a new file, and verifiers need the logged original (LOG-013).
 - Organizational seal by default (should); a named official's signature only where a law names one (LOG-014).
 - ECDSA P-384 with SHA-384 (should), or RSA ≥ 3072 with SHA-384 or stronger; no other seal algorithm, Ed25519 is for log keys only (LOG-015).
 - Seal keys in a FIPS 140-3 level 3 or Common Criteria EAL4+ module, under SEC-020 and SEC-023 (LOG-016).
 - Publish each trust-anchor set with a name, a stable HTTPS address and a validity period; verifiers trust no other anchor (LOG-017).
-- Each seal records its trust-anchor set and assurance level: `tbs` 1–4, `icpg` base/moyen/eleve, `eidas` advanced/qualified (LOG-018).
+- Each seal records its trust-anchor set and assurance level: `tbs` 1–4, `icpg` base/moyen/eleve, `eidas` advanced/qualified, `other` with the certificate-policy object identifier (LOG-018).
 - Keep a JSON seal manifest per record with `id`, `profile`, `mediaType`, `format`, `formatVersion`, `level`, `signerType`, `algorithm`, `certificateSha256`, `trustAnchorSet`, `assuranceLevel`, `sealedAt`, `timeStampAuthority`, `retentionRule`, `log` and optional `replaces` and `hybridWith`; never the salt, content or personal information (LOG-019).
 
 ## Time
 
-- RFC 3161 time stamp from an authority under ETSI EN 319 421 V1.3.1 or an equivalent published policy; EU-qualified when EU effect is wanted (LOG-020).
+- RFC 3161 time stamp from an authority under ETSI EN 319 421 V1.3.1, or under another policy with a published clause-by-clause mapping to it; EU-qualified when EU effect is wanted (LOG-020).
 - List each time-stamp authority in a trust-anchor set; hash requests with SHA-384 or stronger (LOG-021).
 - `sealedAt` is the token time, never the local clock; clocks synchronized under OBS-033 (LOG-022).
 - Time-stamp at least one checkpoint a day (each checkpoint should), over SHA-384 of the checkpoint text followed by the log signature line, without cosignatures, published beside it (LOG-023).
@@ -80,7 +80,7 @@ OBS-110 to OBS-117 belong to the observability specification; this one applies t
 
 - Keep a register of each sealed record with its manifest, who asked, who approved, and its log entry (LOG-060).
 - Run a monitor under another role that alerts on unknown entries, inconsistent checkpoints, unknown keys or certificates, and missing quorums (LOG-061).
-- Separate who asks for a seal from who administers the key; second approval above a set volume; two people for key operations (LOG-062).
+- Separate who asks for a seal from who administers the key; second approval above a set volume or outside the record types of the inventory; two people for key operations (LOG-062).
 - Keep and yearly test a plan for key leaks, key-generation flaws and broken algorithms: revoke, close the shard, find, re-seal with a transfer record, notify (LOG-063).
 - Record `org.fpsot.log.record.sealed`, `.record.resealed`, `.record.withdrawn`, `.checkpoint.signed`, `.shard.closed`, `.policy.published`, `.key.rotated`, `.alert.raised` with the content of OBS-027; no record content, salt or personal information (LOG-064).
 
